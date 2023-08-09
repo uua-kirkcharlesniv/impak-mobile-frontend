@@ -2,6 +2,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:impak_mobile/pages/sign_in_page.dart';
+import 'package:impak_mobile/pages/subscreens/change_password_page.dart';
+import 'package:impak_mobile/pages/subscreens/update_profile_page.dart';
 import 'package:impak_mobile/pages/widgets/list_view_fragment.dart';
 
 class ProfilePage extends StatelessWidget {
@@ -115,6 +119,14 @@ class ProfilePage extends StatelessWidget {
                         ),
                         const SizedBox(height: 16),
                         ListTile(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const UpdateProfilePage(),
+                              ),
+                            );
+                          },
                           contentPadding: EdgeInsets.zero,
                           leading: Container(
                             decoration: BoxDecoration(
@@ -134,6 +146,15 @@ class ProfilePage extends StatelessWidget {
                           trailing: const Icon(Icons.chevron_right),
                         ),
                         ListTile(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    const ChangePasswordPage(),
+                              ),
+                            );
+                          },
                           contentPadding: EdgeInsets.zero,
                           leading: Container(
                             decoration: BoxDecoration(
@@ -219,6 +240,108 @@ class ProfilePage extends StatelessWidget {
                         ),
                         const SizedBox(height: 16),
                         ListTile(
+                          onTap: () {
+                            showDialog(
+                              context: context,
+                              builder: (context) => AlertDialog(
+                                contentPadding: const EdgeInsets.symmetric(
+                                  horizontal: 30,
+                                  vertical: 40,
+                                ),
+                                shape: const RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.all(
+                                    Radius.circular(28),
+                                  ),
+                                ),
+                                content: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Image.asset(
+                                      'assets/delete_confirmation.png',
+                                      height: 120,
+                                      width: 120,
+                                    ),
+                                    const SizedBox(height: 17),
+                                    Text(
+                                      'Are you sure?',
+                                      style: GoogleFonts.inter(
+                                        fontWeight: FontWeight.w600,
+                                        fontSize: 16,
+                                        color: const Color(0xff141414),
+                                      ),
+                                    ),
+                                    const SizedBox(height: 5),
+                                    Text(
+                                      'This action will delete your account,\nand any data associated with it.',
+                                      style: GoogleFonts.inter(
+                                        fontWeight: FontWeight.w300,
+                                        fontSize: 13.5,
+                                        color: const Color(0xff787878),
+                                      ),
+                                      textAlign: TextAlign.center,
+                                    ),
+                                    const SizedBox(height: 21),
+                                    Row(
+                                      children: [
+                                        Expanded(
+                                          child: OutlinedButton(
+                                            style: OutlinedButton.styleFrom(
+                                              shape: RoundedRectangleBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(32),
+                                              ),
+                                            ),
+                                            onPressed: () {
+                                              Navigator.pop(context);
+                                            },
+                                            child: Text(
+                                              'Cancel',
+                                              style: GoogleFonts.inter(
+                                                fontWeight: FontWeight.w500,
+                                                fontSize: 14,
+                                                color: const Color(0xffC5C5C5),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                        const SizedBox(width: 4),
+                                        Expanded(
+                                          child: ElevatedButton(
+                                            style: ElevatedButton.styleFrom(
+                                              backgroundColor:
+                                                  const Color(0xff6366F1),
+                                              elevation: 0,
+                                              shape: RoundedRectangleBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(32),
+                                              ),
+                                            ),
+                                            onPressed: () {
+                                              Navigator.pushAndRemoveUntil(
+                                                context,
+                                                MaterialPageRoute(
+                                                    builder: (_) =>
+                                                        const SignIn()),
+                                                (route) => false,
+                                              );
+                                            },
+                                            child: Text(
+                                              'Yes, Delete',
+                                              style: GoogleFonts.inter(
+                                                fontWeight: FontWeight.w500,
+                                                fontSize: 14,
+                                                color: Colors.white,
+                                              ),
+                                            ),
+                                          ),
+                                        )
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            );
+                          },
                           contentPadding: EdgeInsets.zero,
                           leading: Container(
                             decoration: BoxDecoration(
@@ -245,33 +368,133 @@ class ProfilePage extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 18),
-                Container(
-                  decoration: BoxDecoration(
-                    color: const Color(0xffFFF1F0),
-                    borderRadius: BorderRadius.circular(4),
-                    border: Border.all(
-                      color: const Color(0xffE11D48),
-                    ),
-                  ),
-                  padding: const EdgeInsets.symmetric(vertical: 14),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: const [
-                      Icon(
-                        FontAwesomeIcons.signOutAlt,
-                        size: 14,
-                        color: Color(0xffE11D48),
+                GestureDetector(
+                  onTap: () {
+                    showDialog(
+                      context: context,
+                      builder: (context) => AlertDialog(
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 30,
+                          vertical: 40,
+                        ),
+                        shape: const RoundedRectangleBorder(
+                          borderRadius: BorderRadius.all(
+                            Radius.circular(28),
+                          ),
+                        ),
+                        content: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Image.asset(
+                              'assets/confirm.png',
+                              height: 120,
+                              width: 120,
+                            ),
+                            const SizedBox(height: 17),
+                            Text(
+                              'Log out of IMPAK?',
+                              style: GoogleFonts.inter(
+                                fontWeight: FontWeight.w600,
+                                fontSize: 16,
+                                color: const Color(0xff141414),
+                              ),
+                            ),
+                            const SizedBox(height: 5),
+                            Text(
+                              'You will be logged out of your account.',
+                              style: GoogleFonts.inter(
+                                fontWeight: FontWeight.w300,
+                                fontSize: 13.5,
+                                color: const Color(0xff787878),
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                            const SizedBox(height: 21),
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: OutlinedButton(
+                                    style: OutlinedButton.styleFrom(
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(32),
+                                      ),
+                                    ),
+                                    onPressed: () {
+                                      Navigator.pop(context);
+                                    },
+                                    child: Text(
+                                      'Cancel',
+                                      style: GoogleFonts.inter(
+                                        fontWeight: FontWeight.w500,
+                                        fontSize: 14,
+                                        color: const Color(0xffC5C5C5),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(width: 4),
+                                Expanded(
+                                  child: ElevatedButton(
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: const Color(0xff6366F1),
+                                      elevation: 0,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(32),
+                                      ),
+                                    ),
+                                    onPressed: () {
+                                      Navigator.pushAndRemoveUntil(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (_) => const SignIn()),
+                                        (route) => false,
+                                      );
+                                    },
+                                    child: Text(
+                                      'Yes, Delete',
+                                      style: GoogleFonts.inter(
+                                        fontWeight: FontWeight.w500,
+                                        fontSize: 14,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                  ),
+                                )
+                              ],
+                            ),
+                          ],
+                        ),
                       ),
-                      SizedBox(width: 12),
-                      Text(
-                        'Logout',
-                        style: TextStyle(
-                          fontWeight: FontWeight.w500,
+                    );
+                  },
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: const Color(0xffFFF1F0),
+                      borderRadius: BorderRadius.circular(4),
+                      border: Border.all(
+                        color: const Color(0xffE11D48),
+                      ),
+                    ),
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    child: const Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Icon(
+                          FontAwesomeIcons.signOutAlt,
+                          size: 14,
                           color: Color(0xffE11D48),
                         ),
-                      )
-                    ],
+                        SizedBox(width: 12),
+                        Text(
+                          'Logout',
+                          style: TextStyle(
+                            fontWeight: FontWeight.w500,
+                            color: Color(0xffE11D48),
+                          ),
+                        )
+                      ],
+                    ),
                   ),
                 )
               ],

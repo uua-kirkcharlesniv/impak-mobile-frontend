@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:impak_mobile/pages/widgets/mood_week_indicator_widget.dart';
 
 import '../widgets/homepage_survey_entry_widget.dart';
 import '../widgets/mood_entry_widget.dart';
@@ -110,22 +111,7 @@ class HomePage extends StatelessWidget {
                                 "The Dragon's Realm: A\nSurvey of Gaming\nPreferences",
                           ),
                           const SizedBox(height: 15),
-                          Container(
-                            decoration: BoxDecoration(
-                              boxShadow: [
-                                BoxShadow(
-                                  color:
-                                      const Color(0xff80877B).withOpacity(0.23),
-                                  offset: const Offset(0, 3.51724),
-                                  blurRadius: 6.44828,
-                                ),
-                              ],
-                              color: const Color(0xffFFEDE6),
-                              borderRadius: BorderRadius.circular(6),
-                            ),
-                            width: double.infinity,
-                            height: 250,
-                          ),
+                          Center(child: const MoodWeekIndicator()),
                           const SizedBox(height: 15),
                           const Text(
                             'My Journal',
