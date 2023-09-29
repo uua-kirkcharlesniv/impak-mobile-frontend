@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:impak_mobile/blocs/survey/bloc/survey_bloc.dart';
 
 import '../subscreens/survey_detail_page.dart';
 
@@ -123,8 +125,12 @@ class SurveyListWidget extends StatelessWidget {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => SurveyDetailPage(
-                              id: data['id'],
+                            builder: (context) => BlocProvider(
+                              create: (context) => SurveyBloc(),
+                              child: SurveyDetailPage(
+                                id: data['id'],
+                                name: data['name'],
+                              ),
                             ),
                           ),
                         );

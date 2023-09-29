@@ -24,13 +24,13 @@ class SurveysBloc extends Bloc<SurveysEvent, SurveysState> {
           .availableSurveys();
 
       await Future.delayed(
-        const Duration(seconds: 5),
+        const Duration(seconds: 3),
       );
 
       emit(
         LoadedSurveysState(
           ongoing: ongoing.body['data'],
-          completed: ongoing.body['data'],
+          completed: completed.body['data'],
         ),
       );
     });
