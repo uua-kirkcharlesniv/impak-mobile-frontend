@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:impak_mobile/blocs/profile_bloc/profile_bloc.dart';
 import 'package:impak_mobile/pages/widgets/mood_week_indicator_widget.dart';
 
 import '../widgets/homepage_survey_entry_widget.dart';
@@ -39,98 +41,108 @@ class HomePage extends StatelessWidget {
                 child: Padding(
                   padding: const EdgeInsets.all(29),
                   child: AnimationLimiter(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: AnimationConfiguration.toStaggeredList(
-                        duration: const Duration(milliseconds: 375),
-                        childAnimationBuilder: (widget) => SlideAnimation(
-                          horizontalOffset: 50.0,
-                          child: FadeInAnimation(
-                            child: widget,
-                          ),
-                        ),
-                        children: [
-                          Row(
-                            children: [
-                              const CircleAvatar(
-                                backgroundColor: Color(0xff68298C),
-                                radius: 22.5,
-                                child: Icon(
-                                  FontAwesomeIcons.building,
-                                  color: Colors.white,
-                                ),
+                    child: BlocBuilder<ProfileBloc, ProfileState>(
+                      builder: (context, state) {
+                        final user = (state as ProfileUser).user;
+                        final name = '${user.firstName} ${user.lastName}';
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: AnimationConfiguration.toStaggeredList(
+                            duration: const Duration(milliseconds: 375),
+                            childAnimationBuilder: (widget) => SlideAnimation(
+                              horizontalOffset: 50.0,
+                              child: FadeInAnimation(
+                                child: widget,
                               ),
-                              const SizedBox(width: 12),
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: const [
-                                  Text('Good morning,'),
-                                  Text(
-                                    'John Doe',
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 16,
+                            ),
+                            children: [
+                              Row(
+                                children: [
+                                  const CircleAvatar(
+                                    backgroundColor: Color(0xff68298C),
+                                    radius: 22.5,
+                                    child: Icon(
+                                      FontAwesomeIcons.building,
+                                      color: Colors.white,
                                     ),
-                                  )
+                                  ),
+                                  const SizedBox(width: 12),
+                                  Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      const Text('Good day,'),
+                                      Text(
+                                        user.firstName,
+                                        style: const TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 16,
+                                        ),
+                                      )
+                                    ],
+                                  ),
+                                  const Spacer(),
+                                  Container(
+                                    decoration: BoxDecoration(
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: const Color(0xff80877B)
+                                              .withOpacity(0.23),
+                                          offset: const Offset(0, 3.51724),
+                                          blurRadius: 6.44828,
+                                        ),
+                                      ],
+                                    ),
+                                    child: CircleAvatar(
+                                      radius: 22.5,
+                                      backgroundColor: Colors.white,
+                                      child: CircleAvatar(
+                                        radius: 21.5,
+                                        backgroundColor: Colors.white,
+                                        backgroundImage: NetworkImage(
+                                          Uri.encodeFull(
+                                              'https://ui-avatars.com/api/?name=$name&format=png'),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
                                 ],
                               ),
-                              const Spacer(),
-                              Container(
-                                decoration: BoxDecoration(
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: const Color(0xff80877B)
-                                          .withOpacity(0.23),
-                                      offset: const Offset(0, 3.51724),
-                                      blurRadius: 6.44828,
-                                    ),
-                                  ],
-                                ),
-                                child: const CircleAvatar(
-                                  radius: 22.5,
-                                  backgroundColor: Colors.white,
-                                  child: CircleAvatar(
-                                    radius: 21.5,
-                                    backgroundColor: Colors.white,
-                                    backgroundImage: NetworkImage(
-                                        'https://api.dicebear.com/6.x/pixel-art/png'),
-                                  ),
+                              const SizedBox(height: 16),
+                              const HomepageSurveyWidget(
+                                color: Color(0xff6EE7B7),
+                                name:
+                                    "Dragon's Fury: The\nAdventurer's Opinion",
+                              ),
+                              const SizedBox(height: 15),
+                              const HomepageSurveyWidget(
+                                color: Color(0xffFCD34D),
+                                name:
+                                    "The Dragon's Realm: A\nSurvey of Gaming\nPreferences",
+                              ),
+                              const SizedBox(height: 15),
+                              Center(child: const MoodWeekIndicator()),
+                              const SizedBox(height: 15),
+                              const Text(
+                                'My Journal',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 16,
                                 ),
                               ),
+                              const SizedBox(height: 15),
+                              const MoodEntryWidget(),
+                              const SizedBox(height: 15),
+                              const MoodEntryWidget(),
+                              const SizedBox(height: 15),
+                              const MoodEntryWidget(),
+                              const SizedBox(height: 15),
+                              const MoodEntryWidget(),
+                              const SizedBox(height: 100),
                             ],
                           ),
-                          const SizedBox(height: 16),
-                          const HomepageSurveyWidget(
-                            color: Color(0xff6EE7B7),
-                            name: "Dragon's Fury: The\nAdventurer's Opinion",
-                          ),
-                          const SizedBox(height: 15),
-                          const HomepageSurveyWidget(
-                            color: Color(0xffFCD34D),
-                            name:
-                                "The Dragon's Realm: A\nSurvey of Gaming\nPreferences",
-                          ),
-                          const SizedBox(height: 15),
-                          Center(child: const MoodWeekIndicator()),
-                          const SizedBox(height: 15),
-                          const Text(
-                            'My Journal',
-                            style: TextStyle(
-                              fontWeight: FontWeight.w500,
-                              fontSize: 16,
-                            ),
-                          ),
-                          const SizedBox(height: 15),
-                          const MoodEntryWidget(),
-                          const SizedBox(height: 15),
-                          const MoodEntryWidget(),
-                          const SizedBox(height: 15),
-                          const MoodEntryWidget(),
-                          const SizedBox(height: 15),
-                          const MoodEntryWidget(),
-                          const SizedBox(height: 100),
-                        ],
-                      ),
+                        );
+                      },
                     ),
                   ),
                 ),
