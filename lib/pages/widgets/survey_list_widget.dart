@@ -7,9 +7,13 @@ class SurveyListWidget extends StatelessWidget {
   const SurveyListWidget({
     super.key,
     required this.isFirst,
+    required this.data,
+    this.isCompleted = false,
   });
 
   final bool isFirst;
+  final bool isCompleted;
+  final Map<String, dynamic> data;
 
   @override
   Widget build(BuildContext context) {
@@ -39,18 +43,21 @@ class SurveyListWidget extends StatelessWidget {
                       children: [
                         Container(
                           margin: const EdgeInsets.only(right: 48),
-                          child: const Text(
-                            'Customer Satisfaction: A Survey of Gaming',
-                            style: TextStyle(
+                          child: Text(
+                            data['name'],
+                            style: const TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 18,
                             ),
                           ),
                         ),
                         const SizedBox(height: 5),
-                        const Text(
-                          'Gamer Training Day 2023',
-                          style: TextStyle(
+                        Text(
+                          data['survey_type']
+                              .toString()
+                              .replaceAll('_', ' ')
+                              .toTitleCase(),
+                          style: const TextStyle(
                             fontSize: 10,
                           ),
                         ),
@@ -64,141 +71,168 @@ class SurveyListWidget extends StatelessWidget {
                             color: const Color(0xffE9E9E9).withOpacity(0.7),
                             borderRadius: BorderRadius.circular(3),
                           ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              const Icon(
-                                FontAwesomeIcons.solidClock,
-                                color: Color(0xff818CF8),
-                                size: 10,
-                              ),
-                              const SizedBox(width: 4),
-                              RichText(
-                                text: const TextSpan(
-                                  text: 'Deadline: ',
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.w400,
-                                    color: Colors.black,
-                                    fontSize: 10,
+                          child: Builder(builder: (context) {
+                            final descriptor = isCompleted
+                                ? 'Last answered at '
+                                : 'Deadline: ';
+
+                            return Row(
+                              mainAxisSize: MainAxisSize.min,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                if (isCompleted)
+                                  const Icon(
+                                    FontAwesomeIcons.check,
+                                    color: Colors.green,
+                                    size: 10,
+                                  )
+                                else
+                                  const Icon(
+                                    FontAwesomeIcons.solidClock,
+                                    color: Color(0xff818CF8),
+                                    size: 10,
                                   ),
-                                  children: <TextSpan>[
-                                    TextSpan(
-                                        text: 'Today 1 PM',
-                                        style: TextStyle(
-                                            fontWeight: FontWeight.bold)),
-                                  ],
+                                const SizedBox(width: 4),
+                                RichText(
+                                  text: TextSpan(
+                                    text: descriptor,
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.w400,
+                                      color: Colors.black,
+                                      fontSize: 10,
+                                    ),
+                                    children: <TextSpan>[
+                                      TextSpan(
+                                          text: 'Today 8 PM',
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.bold)),
+                                    ],
+                                  ),
                                 ),
-                              ),
-                            ],
-                          ),
+                              ],
+                            );
+                          }),
                         ),
                       ],
                     ),
                   ),
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const SurveyDetailPage(),
+                  if (!isCompleted)
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => SurveyDetailPage(
+                              id: data['id'],
+                            ),
+                          ),
+                        );
+                      },
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: isFirst ? const Color(0xff6366F1) : null,
+                          border: isFirst
+                              ? null
+                              : Border.all(
+                                  color: const Color(0xff6366F1),
+                                ),
+                          borderRadius: BorderRadius.circular(4),
                         ),
-                      );
-                    },
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: isFirst ? const Color(0xff6366F1) : null,
-                        border: isFirst
-                            ? null
-                            : Border.all(
-                                color: const Color(0xff6366F1),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 8,
+                        ),
+                        margin: const EdgeInsets.only(top: 48),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              'Start',
+                              style: TextStyle(
+                                fontWeight: FontWeight.w400,
+                                fontSize: 12,
+                                color: isFirst
+                                    ? Colors.white
+                                    : const Color(0xff6366F1),
                               ),
-                        borderRadius: BorderRadius.circular(4),
-                      ),
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 8,
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            'Start',
-                            style: TextStyle(
-                              fontWeight: FontWeight.w400,
-                              fontSize: 12,
+                            ),
+                            const SizedBox(width: 12),
+                            Icon(
+                              FontAwesomeIcons.arrowRight,
+                              size: 12,
                               color: isFirst
                                   ? Colors.white
                                   : const Color(0xff6366F1),
                             ),
-                          ),
-                          const SizedBox(width: 12),
-                          Icon(
-                            FontAwesomeIcons.arrowRight,
-                            size: 12,
-                            color: isFirst
-                                ? Colors.white
-                                : const Color(0xff6366F1),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
-                  ),
                 ],
               ),
             ),
           ),
-          Positioned(
-            right: 20,
-            top: 0,
-            child: Container(
-              padding: const EdgeInsets.all(10),
-              decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.6),
-                  borderRadius: const BorderRadius.only(
-                    bottomLeft: Radius.circular(5),
-                    bottomRight: Radius.circular(5),
-                  ),
-                  border: Border.all(
-                    color: const Color(0xffEBEBEB),
-                  )),
-              child: Column(
-                children: [
-                  const Text(
-                    'Time Limit',
-                    style: TextStyle(
-                      fontWeight: FontWeight.w500,
-                      fontSize: 10,
+          if (!isCompleted)
+            Positioned(
+              right: 20,
+              top: 0,
+              child: Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.6),
+                    borderRadius: const BorderRadius.only(
+                      bottomLeft: Radius.circular(5),
+                      bottomRight: Radius.circular(5),
                     ),
-                  ),
-                  const SizedBox(height: 4),
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: const [
-                      Icon(
-                        Icons.timer,
-                        size: 12,
-                        color: Color(0xff6366F1),
+                    border: Border.all(
+                      color: const Color(0xffEBEBEB),
+                    )),
+                child: Column(
+                  children: [
+                    const Text(
+                      'Time Limit',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w500,
+                        fontSize: 10,
                       ),
-                      SizedBox(width: 4),
-                      Text(
-                        '5 min',
-                        style: TextStyle(
-                          fontWeight: FontWeight.w600,
-                          fontSize: 12,
+                    ),
+                    const SizedBox(height: 4),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: const [
+                        Icon(
+                          Icons.timer,
+                          size: 12,
                           color: Color(0xff6366F1),
                         ),
-                      )
-                    ],
-                  )
-                ],
+                        SizedBox(width: 4),
+                        Text(
+                          '5 min',
+                          style: TextStyle(
+                            fontWeight: FontWeight.w600,
+                            fontSize: 12,
+                            color: Color(0xff6366F1),
+                          ),
+                        )
+                      ],
+                    )
+                  ],
+                ),
               ),
             ),
-          ),
         ],
       ),
     );
   }
+}
+
+extension StringCasingExtension on String {
+  String toCapitalized() =>
+      length > 0 ? '${this[0].toUpperCase()}${substring(1).toLowerCase()}' : '';
+  String toTitleCase() => replaceAll(RegExp(' +'), ' ')
+      .split(' ')
+      .map((str) => str.toCapitalized())
+      .join(' ');
 }

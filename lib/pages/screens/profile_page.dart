@@ -1,8 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:impak_mobile/blocs/authentication_bloc/authentication_bloc.dart';
 import 'package:impak_mobile/pages/sign_in_page.dart';
 import 'package:impak_mobile/pages/subscreens/change_password_page.dart';
 import 'package:impak_mobile/pages/subscreens/update_profile_page.dart';
@@ -443,15 +445,12 @@ class ProfilePage extends StatelessWidget {
                                       ),
                                     ),
                                     onPressed: () {
-                                      Navigator.pushAndRemoveUntil(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (_) => const SignIn()),
-                                        (route) => false,
-                                      );
+                                      context
+                                          .read<AuthenticationBloc>()
+                                          .add(AuthenticationLogoutRequested());
                                     },
                                     child: Text(
-                                      'Yes, Delete',
+                                      'Yes',
                                       style: GoogleFonts.inter(
                                         fontWeight: FontWeight.w500,
                                         fontSize: 14,

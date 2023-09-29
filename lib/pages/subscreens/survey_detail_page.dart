@@ -8,7 +8,12 @@ import 'package:flutter_countdown_timer/flutter_countdown_timer.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class SurveyDetailPage extends StatefulWidget {
-  const SurveyDetailPage({super.key});
+  const SurveyDetailPage({
+    super.key,
+    required this.id,
+  });
+
+  final int id;
 
   @override
   State<SurveyDetailPage> createState() => _SurveyDetailPageState();

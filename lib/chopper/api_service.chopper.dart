@@ -17,19 +17,6 @@ final class _$ApiService extends ApiService {
   final definitionType = ApiService;
 
   @override
-  Future<Response<dynamic>> register(Map<String, dynamic> body) {
-    final Uri $url = Uri.parse('/register');
-    final $body = body;
-    final Request $request = Request(
-      'POST',
-      $url,
-      client.baseUrl,
-      body: $body,
-    );
-    return client.send<dynamic, dynamic>($request);
-  }
-
-  @override
   Future<Response<dynamic>> login(Map<String, dynamic> body) {
     final Uri $url = Uri.parse('/login');
     final $body = body;
@@ -43,8 +30,30 @@ final class _$ApiService extends ApiService {
   }
 
   @override
-  Future<Response<dynamic>> changePassword(Map<String, dynamic> body) {
-    final Uri $url = Uri.parse('/profile/change-password');
+  Future<Response<dynamic>> user() {
+    final Uri $url = Uri.parse('/user');
+    final Request $request = Request(
+      'GET',
+      $url,
+      client.baseUrl,
+    );
+    return client.send<dynamic, dynamic>($request);
+  }
+
+  @override
+  Future<Response<dynamic>> tenant() {
+    final Uri $url = Uri.parse('/tenant');
+    final Request $request = Request(
+      'GET',
+      $url,
+      client.baseUrl,
+    );
+    return client.send<dynamic, dynamic>($request);
+  }
+
+  @override
+  Future<Response<dynamic>> getCommunity(Map<String, dynamic> body) {
+    final Uri $url = Uri.parse('/community');
     final $body = body;
     final Request $request = Request(
       'POST',
@@ -56,21 +65,8 @@ final class _$ApiService extends ApiService {
   }
 
   @override
-  Future<Response<dynamic>> updateProfile(Map<String, dynamic> body) {
-    final Uri $url = Uri.parse('/profile/update');
-    final $body = body;
-    final Request $request = Request(
-      'POST',
-      $url,
-      client.baseUrl,
-      body: $body,
-    );
-    return client.send<dynamic, dynamic>($request);
-  }
-
-  @override
-  Future<Response<dynamic>> notifications() {
-    final Uri $url = Uri.parse('/notifications');
+  Future<Response<dynamic>> availableSurveys() {
+    final Uri $url = Uri.parse('/survey/available');
     final Request $request = Request(
       'GET',
       $url,
@@ -80,8 +76,8 @@ final class _$ApiService extends ApiService {
   }
 
   @override
-  Future<Response<dynamic>> categories() {
-    final Uri $url = Uri.parse('/categories');
+  Future<Response<dynamic>> completedSurveys() {
+    final Uri $url = Uri.parse('/survey/completed');
     final Request $request = Request(
       'GET',
       $url,
@@ -91,8 +87,8 @@ final class _$ApiService extends ApiService {
   }
 
   @override
-  Future<Response<dynamic>> messages() {
-    final Uri $url = Uri.parse('/messages');
+  Future<Response<dynamic>> getSurveyDetails(String id) {
+    final Uri $url = Uri.parse('/survey/${id}');
     final Request $request = Request(
       'GET',
       $url,
@@ -102,188 +98,11 @@ final class _$ApiService extends ApiService {
   }
 
   @override
-  Future<Response<dynamic>> merchantTransactions() {
-    final Uri $url = Uri.parse('/transactions/merchant');
-    final Request $request = Request(
-      'GET',
-      $url,
-      client.baseUrl,
-    );
-    return client.send<dynamic, dynamic>($request);
-  }
-
-  @override
-  Future<Response<dynamic>> getClaimedRewards() {
-    final Uri $url = Uri.parse('/claim');
-    final Request $request = Request(
-      'GET',
-      $url,
-      client.baseUrl,
-    );
-    return client.send<dynamic, dynamic>($request);
-  }
-
-  @override
-  Future<Response<dynamic>> claimReward(Map<String, dynamic> body) {
-    final Uri $url = Uri.parse('/claim');
-    final $body = body;
-    final Request $request = Request(
-      'POST',
-      $url,
-      client.baseUrl,
-      body: $body,
-    );
-    return client.send<dynamic, dynamic>($request);
-  }
-
-  @override
-  Future<Response<dynamic>> claimVoucher(Map<String, dynamic> body) {
-    final Uri $url = Uri.parse('/claim-voucher');
-    final $body = body;
-    final Request $request = Request(
-      'POST',
-      $url,
-      client.baseUrl,
-      body: $body,
-    );
-    return client.send<dynamic, dynamic>($request);
-  }
-
-  @override
-  Future<Response<dynamic>> allMerchants() {
-    final Uri $url = Uri.parse('/merchants/all');
-    final Request $request = Request(
-      'GET',
-      $url,
-      client.baseUrl,
-    );
-    return client.send<dynamic, dynamic>($request);
-  }
-
-  @override
-  Future<Response<dynamic>> subscribedMerchants() {
-    final Uri $url = Uri.parse('/merchants/subscribed');
-    final Request $request = Request(
-      'GET',
-      $url,
-      client.baseUrl,
-    );
-    return client.send<dynamic, dynamic>($request);
-  }
-
-  @override
-  Future<Response<dynamic>> availableMerchants() {
-    final Uri $url = Uri.parse('/merchants/available');
-    final Request $request = Request(
-      'GET',
-      $url,
-      client.baseUrl,
-    );
-    return client.send<dynamic, dynamic>($request);
-  }
-
-  @override
-  Future<Response<dynamic>> getMerchant(String id) {
-    final Uri $url = Uri.parse('/merchants/${id}/details');
-    final Request $request = Request(
-      'GET',
-      $url,
-      client.baseUrl,
-    );
-    return client.send<dynamic, dynamic>($request);
-  }
-
-  @override
-  Future<Response<dynamic>> getMerchantMessages(String id) {
-    final Uri $url = Uri.parse('/merchants/${id}/messages');
-    final Request $request = Request(
-      'GET',
-      $url,
-      client.baseUrl,
-    );
-    return client.send<dynamic, dynamic>($request);
-  }
-
-  @override
-  Future<Response<dynamic>> getMerchantRewards(String id) {
-    final Uri $url = Uri.parse('/merchants/${id}/rewards');
-    final Request $request = Request(
-      'GET',
-      $url,
-      client.baseUrl,
-    );
-    return client.send<dynamic, dynamic>($request);
-  }
-
-  @override
-  Future<Response<dynamic>> getMerchantVouchers(String id) {
-    final Uri $url = Uri.parse('/merchants/${id}/vouchers');
-    final Request $request = Request(
-      'GET',
-      $url,
-      client.baseUrl,
-    );
-    return client.send<dynamic, dynamic>($request);
-  }
-
-  @override
-  Future<Response<dynamic>> rewardsReady() {
-    final Uri $url = Uri.parse('/rewards');
-    final Request $request = Request(
-      'GET',
-      $url,
-      client.baseUrl,
-    );
-    return client.send<dynamic, dynamic>($request);
-  }
-
-  @override
-  Future<Response<dynamic>> publicRewards() {
-    final Uri $url = Uri.parse('/public-rewards');
-    final Request $request = Request(
-      'GET',
-      $url,
-      client.baseUrl,
-    );
-    return client.send<dynamic, dynamic>($request);
-  }
-
-  @override
-  Future<Response<dynamic>> publicVouchers() {
-    final Uri $url = Uri.parse('/public-vouchers');
-    final Request $request = Request(
-      'GET',
-      $url,
-      client.baseUrl,
-    );
-    return client.send<dynamic, dynamic>($request);
-  }
-
-  @override
-  Future<Response<dynamic>> getBanner() {
-    final Uri $url = Uri.parse('/banner');
-    final Request $request = Request(
-      'GET',
-      $url,
-      client.baseUrl,
-    );
-    return client.send<dynamic, dynamic>($request);
-  }
-
-  @override
-  Future<Response<dynamic>> deleteAccount() {
-    final Uri $url = Uri.parse('/delete');
-    final Request $request = Request(
-      'DELETE',
-      $url,
-      client.baseUrl,
-    );
-    return client.send<dynamic, dynamic>($request);
-  }
-
-  @override
-  Future<Response<dynamic>> requestForgotPassword(Map<String, dynamic> body) {
-    final Uri $url = Uri.parse('/forgot-password');
+  Future<Response<dynamic>> submitSurvey(
+    String id,
+    Map<String, dynamic> body,
+  ) {
+    final Uri $url = Uri.parse('/survey/${id}');
     final $body = body;
     final Request $request = Request(
       'POST',

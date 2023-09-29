@@ -15,6 +15,7 @@ import 'package:impak_mobile/pages/screens/home_page.dart';
 
 import 'package:impak_mobile/pages/sign_in_page.dart';
 import 'package:impak_mobile/repository/authentication_repository.dart';
+import 'package:impak_mobile/token_interceptor.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -46,7 +47,8 @@ void main() async {
           } else {
             return request;
           }
-        }
+        },
+        TokenInterceptor(),
       ],
       converter: const JsonConverter(),
     ),

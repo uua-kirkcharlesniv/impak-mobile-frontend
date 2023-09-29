@@ -101,51 +101,51 @@ class AuthenticationRepository {
     // final token = await messaging.getToken();
     // await messaging.subscribeToTopic('all');
 
-    final resp = await GetIt.instance
-        .get<ChopperClient>()
-        .getService<ApiService>()
-        .register(
-      <String, dynamic>{
-        'first_name': firstName,
-        'last_name': lastName,
-        'email': email,
-        'password': password,
-        'is_merchant': false,
-        // 'token': token,
-      },
-    );
+    // final resp = await GetIt.instance
+    //     .get<ChopperClient>()
+    //     .getService<ApiService>()
+    //     .register(
+    //   <String, dynamic>{
+    //     'first_name': firstName,
+    //     'last_name': lastName,
+    //     'email': email,
+    //     'password': password,
+    //     'is_merchant': false,
+    //     // 'token': token,
+    //   },
+    // );
 
-    if (!resp.isSuccessful) {
-      final response =
-          jsonDecode(resp.error.toString()) as Map<String, dynamic>;
+    // if (!resp.isSuccessful) {
+    //   final response =
+    //       jsonDecode(resp.error.toString()) as Map<String, dynamic>;
 
-      if (response['errors'] != null) {
-        final data = response['errors'] as Map<String, dynamic>;
-        final errors = <String>[];
-        data.forEach((key, dynamic value) {
-          for (final item in List<dynamic>.from(value as List)) {
-            errors.add(item as String);
-          }
-        });
-        if (errors.isNotEmpty) {
-          throw Exception(errors.join(' '));
-        }
-      }
-    }
+    //   if (response['errors'] != null) {
+    //     final data = response['errors'] as Map<String, dynamic>;
+    //     final errors = <String>[];
+    //     data.forEach((key, dynamic value) {
+    //       for (final item in List<dynamic>.from(value as List)) {
+    //         errors.add(item as String);
+    //       }
+    //     });
+    //     if (errors.isNotEmpty) {
+    //       throw Exception(errors.join(' '));
+    //     }
+    //   }
+    // }
 
-    final box = await Hive.openBox<dynamic>('login');
-    await box.put('email', email);
-    user = UserData.fromJson(resp.body['user'] as Map<String, dynamic>);
-    await const FlutterSecureStorage()
-        .write(
-      key: 'tokenAuth',
-      value: resp.body['access_token'] as String,
-    )
-        .then((value) {
-      const FlutterSecureStorage().read(key: 'tokenAuth').then((value) {
-        _controller.add(AuthenticationStatus.authenticated);
-      });
-    });
+    // final box = await Hive.openBox<dynamic>('login');
+    // await box.put('email', email);
+    // user = UserData.fromJson(resp.body['user'] as Map<String, dynamic>);
+    // await const FlutterSecureStorage()
+    //     .write(
+    //   key: 'tokenAuth',
+    //   value: resp.body['access_token'] as String,
+    // )
+    //     .then((value) {
+    //   const FlutterSecureStorage().read(key: 'tokenAuth').then((value) {
+    //     _controller.add(AuthenticationStatus.authenticated);
+    //   });
+    // });
   }
 
   void logOut() {
