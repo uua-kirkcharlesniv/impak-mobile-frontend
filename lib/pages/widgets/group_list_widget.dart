@@ -7,11 +7,13 @@ class GroupListWidget extends StatelessWidget {
     required this.isFirst,
     required this.index,
     this.isGroup = true,
+    required this.data,
   });
 
   final bool isFirst;
   final bool isGroup;
   final int index;
+  final Map<String, dynamic> data;
 
   @override
   Widget build(BuildContext context) {
@@ -46,7 +48,8 @@ class GroupListWidget extends StatelessWidget {
                 child: AspectRatio(
                   aspectRatio: 1,
                   child: Image.network(
-                    'https://picsum.photos/500/200',
+                    Uri.encodeFull(
+                        'https://ui-avatars.com/api/?name=test&format=png'),
                     fit: BoxFit.cover,
                   ),
                 ),
@@ -58,7 +61,7 @@ class GroupListWidget extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 Text(
-                  isGroup ? 'Group Name' : 'Department Name',
+                  data['name'].toString(),
                   style: TextStyle(
                     color: isFirst ? Colors.white : Colors.black,
                     fontWeight: FontWeight.w600,
@@ -66,60 +69,60 @@ class GroupListWidget extends StatelessWidget {
                   ),
                   maxLines: 1,
                 ),
-                Text(
-                  'Description',
-                  style: TextStyle(
-                    color: isFirst ? Colors.white : const Color(0xff94A3B8),
-                    fontWeight: FontWeight.w400,
-                    fontSize: 12,
-                  ),
-                  maxLines: 1,
-                ),
+                // Text(
+                //   'Description',
+                //   style: TextStyle(
+                //     color: isFirst ? Colors.white : const Color(0xff94A3B8),
+                //     fontWeight: FontWeight.w400,
+                //     fontSize: 12,
+                //   ),
+                //   maxLines: 1,
+                // ),
               ],
             ),
-            const Spacer(),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                Expanded(
-                  child: index > 5
-                      ? Text(
-                          'New member',
-                          style: TextStyle(
-                            color: isFirst
-                                ? Colors.white
-                                : const Color(0xff94A3B8),
-                            fontSize: 12,
-                          ),
-                        )
-                      : const SizedBox(),
-                ),
-                Expanded(
-                  child: Align(
-                    alignment: Alignment.bottomRight,
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: const Color(0xffC7D2FE),
-                        borderRadius: BorderRadius.circular(40),
-                      ),
-                      padding: const EdgeInsets.symmetric(
-                        vertical: 2,
-                        horizontal: 8,
-                      ),
-                      child: const Center(
-                        child: Text(
-                          '23',
-                          style: TextStyle(
-                            fontWeight: FontWeight.w500,
-                            fontSize: 12,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
+            // const Spacer(),
+            // Column(
+            //   crossAxisAlignment: CrossAxisAlignment.end,
+            //   children: [
+            //     Expanded(
+            //       child: index > 5
+            //           ? Text(
+            //               'New member',
+            //               style: TextStyle(
+            //                 color: isFirst
+            //                     ? Colors.white
+            //                     : const Color(0xff94A3B8),
+            //                 fontSize: 12,
+            //               ),
+            //             )
+            //           : const SizedBox(),
+            //     ),
+            //     Expanded(
+            //       child: Align(
+            //         alignment: Alignment.bottomRight,
+            //         child: Container(
+            //           decoration: BoxDecoration(
+            //             color: const Color(0xffC7D2FE),
+            //             borderRadius: BorderRadius.circular(40),
+            //           ),
+            //           padding: const EdgeInsets.symmetric(
+            //             vertical: 2,
+            //             horizontal: 8,
+            //           ),
+            //           child: const Center(
+            //             child: Text(
+            //               '23',
+            //               style: TextStyle(
+            //                 fontWeight: FontWeight.w500,
+            //                 fontSize: 12,
+            //               ),
+            //             ),
+            //           ),
+            //         ),
+            //       ),
+            //     ),
+            //   ],
+            // ),
           ],
         ),
       ),
