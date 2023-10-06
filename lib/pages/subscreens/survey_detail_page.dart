@@ -173,6 +173,7 @@ class _SurveyDetailPageState extends State<SurveyDetailPage> {
 
   void _storeAnswer() {
     _answers['q${currentQuestionData['id']}'] = answer;
+    print(_answers);
   }
 
   void _resetDefaultAnswer() {
@@ -183,16 +184,24 @@ class _SurveyDetailPageState extends State<SurveyDetailPage> {
         });
         break;
       case 'multiselect':
-        answer = [];
+        setState(() {
+          answer = [];
+        });
         break;
       case 'short-answer':
-        answer = null;
+        setState(() {
+          answer = null;
+        });
         break;
       case 'long-answer':
-        answer = null;
+        setState(() {
+          answer = null;
+        });
         break;
-      case 'rating':
-        answer = 5;
+      case 'range':
+        setState(() {
+          answer = 1;
+        });
         break;
       default:
     }
@@ -758,30 +767,54 @@ class _SurveyDetailPageState extends State<SurveyDetailPage> {
                                             );
                                           case 'range':
                                             return Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
                                               children: [
-                                                RatingBar.builder(
-                                                  initialRating: 5,
-                                                  minRating: 1,
-                                                  direction: Axis.horizontal,
-                                                  allowHalfRating: false,
-                                                  itemCount: 10,
-                                                  itemPadding: const EdgeInsets
-                                                      .symmetric(
-                                                    horizontal: 4.0,
-                                                  ),
-                                                  itemBuilder: (context, _) =>
-                                                      const Icon(
-                                                    Icons.favorite,
-                                                    color: Color(0xff4F46E5),
-                                                    size: 10,
-                                                  ),
-                                                  glowColor: Colors.white,
-                                                  itemSize: 30,
-                                                  onRatingUpdate: (rating) {
-                                                    setState(() {
-                                                      answer = rating;
-                                                    });
-                                                  },
+                                                Row(
+                                                  children: [
+                                                    Text((currentQuestionData[
+                                                            'options'][0])
+                                                        .toString()),
+                                                    Expanded(
+                                                      child: Center(
+                                                        child:
+                                                            RatingBar.builder(
+                                                          initialRating: 1,
+                                                          minRating: 1,
+                                                          direction:
+                                                              Axis.horizontal,
+                                                          allowHalfRating:
+                                                              false,
+                                                          itemCount: 10,
+                                                          itemPadding:
+                                                              const EdgeInsets
+                                                                  .symmetric(
+                                                            horizontal: 4.0,
+                                                          ),
+                                                          itemBuilder:
+                                                              (context, _) =>
+                                                                  const Icon(
+                                                            Icons.favorite,
+                                                            color: Color(
+                                                                0xff4F46E5),
+                                                            size: 10,
+                                                          ),
+                                                          glowColor:
+                                                              Colors.white,
+                                                          itemSize: 30,
+                                                          onRatingUpdate:
+                                                              (rating) {
+                                                            setState(() {
+                                                              answer = rating;
+                                                            });
+                                                          },
+                                                        ),
+                                                      ),
+                                                    ),
+                                                    Text((currentQuestionData[
+                                                            'options'][1])
+                                                        .toString()),
+                                                  ],
                                                 ),
                                                 ErrorMessageWidget(
                                                   error: error,
