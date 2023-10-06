@@ -116,6 +116,7 @@ class _SurveyDetailPageState extends State<SurveyDetailPage> {
       return;
     } else if (isAtEnd) {
       Navigator.pop(context);
+      return;
     }
 
     if (currentQuestion < totalQuestionsPerSection[currentSection] - 1) {
@@ -144,9 +145,11 @@ class _SurveyDetailPageState extends State<SurveyDetailPage> {
         if (await _validateAnswer()) {
           _storeAnswer();
 
-          setState(() {
-            isAtEnd = true;
-          });
+          if (await _submitAnswer()) {
+            setState(() {
+              isAtEnd = true;
+            });
+          }
         }
       }
     }
@@ -173,7 +176,21 @@ class _SurveyDetailPageState extends State<SurveyDetailPage> {
 
   void _storeAnswer() {
     _answers['q${currentQuestionData['id']}'] = answer;
-    print(_answers);
+  }
+
+  Future<bool> _submitAnswer() async {
+    final submit = await GetIt.instance
+        .get<ChopperClient>()
+        .getService<ApiService>()
+        .submitSurvey(widget.id.toString(), _answers);
+
+    if (!submit.isSuccessful) {
+      setState(() {
+        error = 'There was a problem submitting your survey.';
+      });
+    }
+
+    return submit.isSuccessful;
   }
 
   void _resetDefaultAnswer() {

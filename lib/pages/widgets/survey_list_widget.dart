@@ -11,11 +11,13 @@ class SurveyListWidget extends StatelessWidget {
     required this.isFirst,
     required this.data,
     this.isCompleted = false,
+    this.onFinish,
   });
 
   final bool isFirst;
   final bool isCompleted;
   final Map<String, dynamic> data;
+  final VoidCallback? onFinish;
 
   @override
   Widget build(BuildContext context) {
@@ -133,7 +135,9 @@ class SurveyListWidget extends StatelessWidget {
                               ),
                             ),
                           ),
-                        );
+                        ).then((value) {
+                          onFinish?.call();
+                        });
                       },
                       child: Container(
                         decoration: BoxDecoration(

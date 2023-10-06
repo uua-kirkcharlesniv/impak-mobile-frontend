@@ -74,6 +74,11 @@ class SurveyPage extends StatelessWidget {
                               child: SurveyListWidget(
                                 isFirst: isFirst,
                                 data: state.ongoing[index],
+                                onFinish: () {
+                                  context
+                                      .read<SurveysBloc>()
+                                      .add(LoadSurveys());
+                                },
                               ),
                             ),
                           ),
