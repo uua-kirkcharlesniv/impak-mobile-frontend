@@ -112,4 +112,17 @@ final class _$ApiService extends ApiService {
     );
     return client.send<dynamic, dynamic>($request);
   }
+
+  @override
+  Future<Response<dynamic>> validateAnswer(Map<String, dynamic> body) {
+    final Uri $url = Uri.parse('/validate-answer');
+    final $body = body;
+    final Request $request = Request(
+      'POST',
+      $url,
+      client.baseUrl,
+      body: $body,
+    );
+    return client.send<dynamic, dynamic>($request);
+  }
 }

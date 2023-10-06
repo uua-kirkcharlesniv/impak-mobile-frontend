@@ -30,4 +30,7 @@ abstract class ApiService extends ChopperService {
   @Post(path: 'survey/{id}')
   Future<Response> submitSurvey(
       @Path() String id, @Body() Map<String, dynamic> body);
+
+  @Post(path: 'validate-answer')
+  Future<Response> validateAnswer(@Body() Map<String, dynamic> body);
 }

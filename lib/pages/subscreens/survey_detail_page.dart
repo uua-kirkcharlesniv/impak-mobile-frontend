@@ -1,14 +1,16 @@
 // ignore_for_file: prefer_const_literals_to_create_immutables
 
-import 'package:dotted_border/dotted_border.dart';
-import 'package:dropdown_button2/dropdown_button2.dart';
-import 'package:flutter/cupertino.dart';
+import 'dart:convert';
+
+import 'package:chopper/chopper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_countdown_timer/flutter_countdown_timer.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:get_it/get_it.dart';
 import 'package:impak_mobile/blocs/survey/bloc/survey_bloc.dart';
+import 'package:impak_mobile/chopper/api_service.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 
 class SurveyDetailPage extends StatefulWidget {
@@ -37,6 +39,9 @@ class _SurveyDetailPageState extends State<SurveyDetailPage> {
   int totalSections = 9999;
   int totalQuestions = 9999;
   List<int> totalQuestionsPerSection = [];
+  Map<String, dynamic> _answers = {};
+  dynamic answer;
+  String? error;
 
   int get answeredQuestionsCount {
     int answeredQuestionsCount = 0;
@@ -103,7 +108,7 @@ class _SurveyDetailPageState extends State<SurveyDetailPage> {
     // }
   }
 
-  void _handleNextKey() {
+  Future<void> _handleNextKey() async {
     if (isAtStart) {
       setState(() {
         isAtStart = false;
@@ -114,21 +119,87 @@ class _SurveyDetailPageState extends State<SurveyDetailPage> {
     }
 
     if (currentQuestion < totalQuestionsPerSection[currentSection] - 1) {
-      setState(() {
-        currentQuestion++;
-      });
+      if (await _validateAnswer()) {
+        _storeAnswer();
+
+        setState(() {
+          currentQuestion++;
+        });
+
+        _resetDefaultAnswer();
+      }
     } else {
       if (currentSection < totalSections - 1) {
-        setState(() {
-          currentSection++;
-          currentQuestion = 0;
-        });
+        if (await _validateAnswer()) {
+          _storeAnswer();
+
+          setState(() {
+            currentSection++;
+            currentQuestion = 0;
+          });
+
+          _resetDefaultAnswer();
+        }
       } else {
-        setState(() {
-          isAtEnd = true;
-        });
+        if (await _validateAnswer()) {
+          _storeAnswer();
+
+          setState(() {
+            isAtEnd = true;
+          });
+        }
       }
     }
+  }
+
+  Future<bool> _validateAnswer() async {
+    final validate = await GetIt.instance
+        .get<ChopperClient>()
+        .getService<ApiService>()
+        .validateAnswer({
+      'key': 'q${currentQuestionData['id']}',
+      'answer': answer,
+      'rules': currentQuestionData['rules'],
+    });
+
+    if (!validate.isSuccessful) {
+      setState(() {
+        error = jsonDecode(validate.error.toString())['message'];
+      });
+    }
+
+    return validate.isSuccessful;
+  }
+
+  void _storeAnswer() {
+    _answers['q${currentQuestionData['id']}'] = answer;
+  }
+
+  void _resetDefaultAnswer() {
+    switch (currentQuestionData['type']) {
+      case 'radio':
+        setState(() {
+          answer = null;
+        });
+        break;
+      case 'multiselect':
+        answer = [];
+        break;
+      case 'short-answer':
+        answer = null;
+        break;
+      case 'long-answer':
+        answer = null;
+        break;
+      case 'rating':
+        answer = 5;
+        break;
+      default:
+    }
+
+    setState(() {
+      error = null;
+    });
   }
 
   String _buildPageTextButton() {
@@ -401,75 +472,188 @@ class _SurveyDetailPageState extends State<SurveyDetailPage> {
                                   itemBuilder: (context, index) {
                                     return SurveyQuestionDetail(
                                         currentQuestionData['content']
-                                            .toString(), child: Builder(
+                                            .toString(),
+                                        required:
+                                            currentQuestionData['is_required']
+                                                    .toString() ==
+                                                'true', child: Builder(
                                       builder: (context) {
                                         switch (currentQuestionData['type']) {
                                           case 'radio':
                                           case 'multiselect':
-                                            var selectedIndex = 0;
-
-                                            return StatefulBuilder(
-                                                builder: (context, setState) {
-                                              return ListView.separated(
-                                                itemBuilder: (context, index) {
-                                                  return Container(
-                                                    padding: const EdgeInsets
-                                                        .symmetric(
-                                                      horizontal: 12,
-                                                    ),
-                                                    decoration: BoxDecoration(
-                                                      border: Border.all(
-                                                        color: selectedIndex ==
-                                                                index
-                                                            ? const Color(
-                                                                0xff4F46E5)
-                                                            : const Color(
-                                                                0xffF4F4F4),
-                                                      ),
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              4),
-                                                    ),
-                                                    child: ListTile(
-                                                      onTap: () {
-                                                        setState(() {
-                                                          selectedIndex = index;
-                                                        });
-                                                      },
-                                                      contentPadding:
-                                                          EdgeInsets.zero,
-                                                      title: Text(
+                                            return Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                ListView.separated(
+                                                  shrinkWrap: true,
+                                                  itemBuilder:
+                                                      (context, index) {
+                                                    final type =
                                                         currentQuestionData[
-                                                            'options'][index],
-                                                        style: TextStyle(
-                                                          color: selectedIndex ==
-                                                                  index
+                                                            'type'];
+
+                                                    final data =
+                                                        currentQuestionData[
+                                                            'options'][index];
+
+                                                    bool isSelected = false;
+
+                                                    if (type == 'radio') {
+                                                      isSelected =
+                                                          data == answer;
+                                                    } else {
+                                                      if (answer is List) {
+                                                        isSelected =
+                                                            (answer as List)
+                                                                .contains(data);
+                                                      }
+                                                    }
+
+                                                    return Container(
+                                                      padding: const EdgeInsets
+                                                          .symmetric(
+                                                        horizontal: 12,
+                                                      ),
+                                                      decoration: BoxDecoration(
+                                                        border: Border.all(
+                                                          color: isSelected
                                                               ? const Color(
                                                                   0xff4F46E5)
-                                                              : Colors.black,
-                                                          fontWeight:
-                                                              selectedIndex ==
-                                                                      index
-                                                                  ? FontWeight
-                                                                      .bold
-                                                                  : null,
+                                                              : const Color(
+                                                                  0xffF4F4F4),
+                                                        ),
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(4),
+                                                      ),
+                                                      child: ListTile(
+                                                        onTap: () {
+                                                          if (currentQuestionData[
+                                                                  'type'] ==
+                                                              'radio') {
+                                                            setState(() {
+                                                              answer = data;
+                                                            });
+                                                          } else {
+                                                            var localAnswer =
+                                                                answer;
+                                                            if (localAnswer
+                                                                is! List) {
+                                                              localAnswer = [];
+                                                            }
+
+                                                            if (localAnswer
+                                                                .contains(
+                                                                    data)) {
+                                                              localAnswer
+                                                                  .remove(data);
+                                                            } else {
+                                                              final max = int.parse(
+                                                                  currentQuestionData[
+                                                                          'max']
+                                                                      .toString());
+
+                                                              if ((localAnswer
+                                                                          .length +
+                                                                      1) >
+                                                                  max) {
+                                                                // no-op
+                                                                return;
+                                                              }
+
+                                                              localAnswer
+                                                                  .add(data);
+                                                            }
+
+                                                            setState(() {
+                                                              answer =
+                                                                  localAnswer;
+                                                            });
+                                                          }
+                                                        },
+                                                        contentPadding:
+                                                            EdgeInsets.zero,
+                                                        title: Text(
+                                                          data,
+                                                          style: TextStyle(
+                                                            color: isSelected
+                                                                ? const Color(
+                                                                    0xff4F46E5)
+                                                                : Colors.black,
+                                                            fontWeight:
+                                                                isSelected
+                                                                    ? FontWeight
+                                                                        .bold
+                                                                    : null,
+                                                          ),
                                                         ),
                                                       ),
-                                                    ),
-                                                  );
-                                                },
-                                                separatorBuilder:
-                                                    (context, index) {
-                                                  return const SizedBox(
-                                                      height: 16);
-                                                },
-                                                itemCount: (currentQuestionData[
-                                                        'options'])
-                                                    .length,
-                                              );
-                                            });
+                                                    );
+                                                  },
+                                                  separatorBuilder:
+                                                      (context, index) {
+                                                    return const SizedBox(
+                                                        height: 16);
+                                                  },
+                                                  itemCount:
+                                                      (currentQuestionData[
+                                                              'options'])
+                                                          .length,
+                                                ),
+                                                Builder(
+                                                  builder: (context) {
+                                                    final min =
+                                                        currentQuestionData[
+                                                                'min']
+                                                            .toString();
+                                                    if (min != 'null') {
+                                                      return Padding(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .only(top: 8),
+                                                        child: Text(
+                                                          'Minimum selection of $min choices.',
+                                                          style:
+                                                              const TextStyle(
+                                                            color: Colors.grey,
+                                                          ),
+                                                        ),
+                                                      );
+                                                    }
 
-                                            break;
+                                                    return const SizedBox();
+                                                  },
+                                                ),
+                                                Builder(
+                                                  builder: (context) {
+                                                    final max =
+                                                        currentQuestionData[
+                                                                'max']
+                                                            .toString();
+                                                    if (max != 'null') {
+                                                      return Padding(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .only(top: 8),
+                                                        child: Text(
+                                                          'Maximum selection of $max choices.',
+                                                          style:
+                                                              const TextStyle(
+                                                            color: Colors.grey,
+                                                          ),
+                                                        ),
+                                                      );
+                                                    }
+
+                                                    return const SizedBox();
+                                                  },
+                                                ),
+                                                ErrorMessageWidget(
+                                                  error: error,
+                                                ),
+                                              ],
+                                            );
 
                                           case 'time':
                                             return Row(
@@ -498,71 +682,111 @@ class _SurveyDetailPageState extends State<SurveyDetailPage> {
                                             final isLong =
                                                 currentQuestionData['type'] ==
                                                     'long-answer';
-                                            return TextField(
-                                              keyboardType: isLong
-                                                  ? TextInputType.multiline
-                                                  : TextInputType.text,
-                                              maxLines: isLong ? 24 : null,
-                                              decoration: InputDecoration(
-                                                hintText:
-                                                    'Open-ended text response',
-                                                hintStyle: const TextStyle(
-                                                  color: Color(0xffDBDBDB),
-                                                ),
-                                                focusColor:
-                                                    const Color(0xff4F46E5),
-                                                focusedBorder:
-                                                    OutlineInputBorder(
-                                                  borderSide: const BorderSide(
-                                                    color: Color(0xff4F46E5),
+
+                                            return Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Flexible(
+                                                  child: TextField(
+                                                    keyboardType: isLong
+                                                        ? TextInputType
+                                                            .multiline
+                                                        : TextInputType.text,
+                                                    onChanged: (value) {
+                                                      setState(() {
+                                                        answer = value;
+                                                      });
+                                                    },
+                                                    maxLength:
+                                                        currentQuestionData[
+                                                            'max'],
+                                                    maxLines:
+                                                        isLong ? 24 : null,
+                                                    decoration: InputDecoration(
+                                                      hintText:
+                                                          'Open-ended text response',
+                                                      hintStyle:
+                                                          const TextStyle(
+                                                        color:
+                                                            Color(0xffDBDBDB),
+                                                      ),
+                                                      focusColor: const Color(
+                                                          0xff4F46E5),
+                                                      focusedBorder:
+                                                          OutlineInputBorder(
+                                                        borderSide:
+                                                            const BorderSide(
+                                                          color:
+                                                              Color(0xff4F46E5),
+                                                        ),
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(10.0),
+                                                      ),
+                                                      enabledBorder:
+                                                          OutlineInputBorder(
+                                                        borderSide:
+                                                            const BorderSide(
+                                                          color:
+                                                              Color(0xffF4F4F4),
+                                                          width: 1,
+                                                        ),
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(10.0),
+                                                      ),
+                                                      border:
+                                                          OutlineInputBorder(
+                                                        borderSide:
+                                                            const BorderSide(
+                                                          color:
+                                                              Color(0xffF4F4F4),
+                                                          width: 1,
+                                                        ),
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(10.0),
+                                                      ),
+                                                    ),
                                                   ),
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          10.0),
                                                 ),
-                                                enabledBorder:
-                                                    OutlineInputBorder(
-                                                  borderSide: const BorderSide(
-                                                    color: Color(0xffF4F4F4),
-                                                    width: 1,
-                                                  ),
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          10.0),
+                                                ErrorMessageWidget(
+                                                  error: error,
                                                 ),
-                                                border: OutlineInputBorder(
-                                                  borderSide: const BorderSide(
-                                                    color: Color(0xffF4F4F4),
-                                                    width: 1,
-                                                  ),
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          10.0),
-                                                ),
-                                              ),
+                                              ],
                                             );
                                           case 'range':
-                                            return RatingBar.builder(
-                                              initialRating: 5,
-                                              minRating: 1,
-                                              direction: Axis.horizontal,
-                                              allowHalfRating: false,
-                                              itemCount: 10,
-                                              itemPadding:
-                                                  const EdgeInsets.symmetric(
-                                                horizontal: 4.0,
-                                              ),
-                                              itemBuilder: (context, _) =>
-                                                  const Icon(
-                                                Icons.favorite,
-                                                color: Color(0xff4F46E5),
-                                                size: 10,
-                                              ),
-                                              glowColor: Colors.white,
-                                              itemSize: 30,
-                                              onRatingUpdate: (rating) {
-                                                print(rating);
-                                              },
+                                            return Column(
+                                              children: [
+                                                RatingBar.builder(
+                                                  initialRating: 5,
+                                                  minRating: 1,
+                                                  direction: Axis.horizontal,
+                                                  allowHalfRating: false,
+                                                  itemCount: 10,
+                                                  itemPadding: const EdgeInsets
+                                                      .symmetric(
+                                                    horizontal: 4.0,
+                                                  ),
+                                                  itemBuilder: (context, _) =>
+                                                      const Icon(
+                                                    Icons.favorite,
+                                                    color: Color(0xff4F46E5),
+                                                    size: 10,
+                                                  ),
+                                                  glowColor: Colors.white,
+                                                  itemSize: 30,
+                                                  onRatingUpdate: (rating) {
+                                                    setState(() {
+                                                      answer = rating;
+                                                    });
+                                                  },
+                                                ),
+                                                ErrorMessageWidget(
+                                                  error: error,
+                                                ),
+                                              ],
                                             );
 
                                           case 'likert':
@@ -1074,7 +1298,7 @@ class _SurveyDetailPageState extends State<SurveyDetailPage> {
                       text = 'Please wait while we load your survey...';
                       color = Colors.grey.shade300;
                       textColor = Colors.black;
-                      onTap = () {};
+                      onTap = () async {};
 
                       context.read<SurveyBloc>().add(LoadSurvey(id: widget.id));
                     }
@@ -1119,16 +1343,49 @@ class _SurveyDetailPageState extends State<SurveyDetailPage> {
   }
 }
 
+class ErrorMessageWidget extends StatelessWidget {
+  const ErrorMessageWidget({
+    super.key,
+    required this.error,
+  });
+
+  final String? error;
+
+  @override
+  Widget build(BuildContext context) {
+    return Builder(
+      builder: (context) {
+        if (error != null && (error?.isNotEmpty ?? false)) {
+          return Padding(
+            padding: const EdgeInsets.only(top: 8),
+            child: Text(
+              error ?? '',
+              style: const TextStyle(
+                color: Colors.red,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          );
+        }
+
+        return const SizedBox();
+      },
+    );
+  }
+}
+
 class SurveyQuestionDetail extends StatelessWidget {
   final String title;
   final Widget child;
   final bool shouldWrapChildInExpanded;
+  final bool required;
 
   const SurveyQuestionDetail(
     this.title, {
     super.key,
     required this.child,
     this.shouldWrapChildInExpanded = true,
+    required this.required,
   });
 
   @override
@@ -1138,6 +1395,7 @@ class SurveyQuestionDetail extends StatelessWidget {
       children: [
         SurveyQuestionHeaderWidget(
           title,
+          required: required,
         ),
         const SizedBox(height: 12),
         if (shouldWrapChildInExpanded)
@@ -1153,19 +1411,34 @@ class SurveyQuestionDetail extends StatelessWidget {
 
 class SurveyQuestionHeaderWidget extends StatelessWidget {
   final String name;
+  final bool required;
 
   const SurveyQuestionHeaderWidget(
     this.name, {
     super.key,
+    required this.required,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Text(
-      name,
-      style: const TextStyle(
-        fontWeight: FontWeight.w600,
-        fontSize: 18,
+    return RichText(
+      text: TextSpan(
+        text: name,
+        style: const TextStyle(
+          fontWeight: FontWeight.w600,
+          fontSize: 18,
+          color: Colors.black,
+        ),
+        children: [
+          if (required)
+            const TextSpan(
+              text: ' *',
+              style: TextStyle(
+                color: Colors.red,
+                fontWeight: FontWeight.bold,
+              ),
+            )
+        ],
       ),
     );
   }
