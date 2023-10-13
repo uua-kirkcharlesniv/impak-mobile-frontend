@@ -61,16 +61,23 @@ class _HopeScaleTextQuestionsPageState
                         textAlign: TextAlign.start,
                       ),
                       const SizedBox(height: 8),
-                      Text(
-                        'Your answer will be submitted anonymously.',
-                        style: GoogleFonts.urbanist(
-                          color: Colors.black,
-                          fontWeight: FontWeight.w300,
-                          fontSize: 16,
-                        ),
-                      ),
+                      Builder(builder: (context) {
+                        if (currentPage == 0) {
+                          return Text(
+                            'Your answer will be submitted anonymously.',
+                            style: GoogleFonts.urbanist(
+                              color: Colors.black,
+                              fontWeight: FontWeight.w300,
+                              fontSize: 16,
+                            ),
+                          );
+                        }
+
+                        return const SizedBox();
+                      }),
                       Expanded(
                         child: TextField(
+                          key: ValueKey(currentPage),
                           expands: true,
                           minLines: null,
                           maxLines: null,
