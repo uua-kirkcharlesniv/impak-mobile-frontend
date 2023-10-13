@@ -9,12 +9,8 @@ import 'package:flutter_sticky_header/flutter_sticky_header.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:impak_mobile/blocs/profile_bloc/profile_bloc.dart';
 import 'package:impak_mobile/pages/screens/add_entry_page.dart';
-import 'package:impak_mobile/pages/widgets/mood_week_indicator_widget.dart';
+import 'package:impak_mobile/pages/screens/hope_scale_page.dart';
 import 'package:intl/intl.dart';
-import 'package:sticky_headers/sticky_headers.dart';
-
-import '../widgets/homepage_survey_entry_widget.dart';
-import '../widgets/mood_entry_widget.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -37,7 +33,7 @@ class HomePage extends StatelessWidget {
                 size: 18,
               ),
               backgroundColor: const Color(0xff7C74FF),
-              label: 'Create Journal',
+              label: 'Add Journal Entry',
               onTap: () {
                 Navigator.push(
                   context,
@@ -56,6 +52,16 @@ class HomePage extends StatelessWidget {
               ),
               backgroundColor: Colors.blue,
               label: 'Hope Scale',
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) {
+                      return const HopeScalePage();
+                    },
+                  ),
+                );
+              },
             ),
             SpeedDialChild(
               child: const Icon(CupertinoIcons.sun_dust),
