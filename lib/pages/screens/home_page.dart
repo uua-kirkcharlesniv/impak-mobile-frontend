@@ -1,7 +1,9 @@
 import 'dart:math';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:flutter_sticky_header/flutter_sticky_header.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -21,24 +23,46 @@ class HomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       floatingActionButton: Padding(
-        padding: const EdgeInsets.only(bottom: 80.0),
-        child: FloatingActionButton(
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) {
-                  return const AddEntryPage();
-                },
-              ),
-            );
-          },
+        padding: const EdgeInsets.only(bottom: 80),
+        child: SpeedDial(
+          icon: Icons.add,
           backgroundColor: const Color(0xff7C74FF),
-          child: const Icon(
-            Icons.add,
-            color: Colors.white,
-            size: 32,
-          ),
+          activeIcon: Icons.close,
+          spacing: 3,
+          children: [
+            SpeedDialChild(
+              child: const Icon(
+                FontAwesomeIcons.pen,
+                color: Colors.white,
+                size: 18,
+              ),
+              backgroundColor: const Color(0xff7C74FF),
+              label: 'Create Journal',
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) {
+                      return const AddEntryPage();
+                    },
+                  ),
+                );
+              },
+            ),
+            SpeedDialChild(
+              child: const Icon(
+                FontAwesomeIcons.faceSmile,
+                color: Colors.white,
+              ),
+              backgroundColor: Colors.blue,
+              label: 'Hope Scale',
+            ),
+            SpeedDialChild(
+              child: const Icon(CupertinoIcons.sun_dust),
+              backgroundColor: Colors.amber,
+              label: 'Optimism Test',
+            ),
+          ],
         ),
       ),
       body: Stack(
@@ -129,18 +153,18 @@ class HomePage extends StatelessWidget {
                                     ),
                                   ],
                                 ),
-                                const SizedBox(height: 16),
-                                const HomepageSurveyWidget(
-                                  color: Color(0xff6EE7B7),
-                                  name:
-                                      "Dragon's Fury: The\nAdventurer's Opinion",
-                                ),
-                                const SizedBox(height: 15),
-                                const HomepageSurveyWidget(
-                                  color: Color(0xffFCD34D),
-                                  name:
-                                      "The Dragon's Realm: A\nSurvey of Gaming\nPreferences",
-                                ),
+                                // const SizedBox(height: 16),
+                                // const HomepageSurveyWidget(
+                                //   color: Color(0xff6EE7B7),
+                                //   name:
+                                //       "Dragon's Fury: The\nAdventurer's Opinion",
+                                // ),
+                                // const SizedBox(height: 15),
+                                // const HomepageSurveyWidget(
+                                //   color: Color(0xffFCD34D),
+                                //   name:
+                                //       "The Dragon's Realm: A\nSurvey of Gaming\nPreferences",
+                                // ),
                               ],
                             ),
                           ),
@@ -169,7 +193,7 @@ class HomePage extends StatelessWidget {
                                   ),
                                 ),
                               ),
-                              SizedBox(height: 16),
+                              const SizedBox(height: 16),
                             ],
                           ),
                         ),

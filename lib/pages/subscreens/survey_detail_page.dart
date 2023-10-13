@@ -784,14 +784,21 @@ class _SurveyDetailPageState extends State<SurveyDetailPage> {
                                             );
                                           case 'range':
                                             return Column(
+                                              key: ValueKey(
+                                                  'q${currentQuestionData['id']}'),
                                               crossAxisAlignment:
                                                   CrossAxisAlignment.start,
                                               children: [
                                                 Row(
                                                   children: [
-                                                    Text((currentQuestionData[
-                                                            'options'][0])
-                                                        .toString()),
+                                                    Text(
+                                                      (currentQuestionData[
+                                                              'options'][0])
+                                                          .toString(),
+                                                      style: const TextStyle(
+                                                        fontSize: 12,
+                                                      ),
+                                                    ),
                                                     Expanded(
                                                       child: Center(
                                                         child:
@@ -803,11 +810,6 @@ class _SurveyDetailPageState extends State<SurveyDetailPage> {
                                                           allowHalfRating:
                                                               false,
                                                           itemCount: 10,
-                                                          itemPadding:
-                                                              const EdgeInsets
-                                                                  .symmetric(
-                                                            horizontal: 4.0,
-                                                          ),
                                                           itemBuilder:
                                                               (context, _) =>
                                                                   const Icon(
@@ -818,7 +820,7 @@ class _SurveyDetailPageState extends State<SurveyDetailPage> {
                                                           ),
                                                           glowColor:
                                                               Colors.white,
-                                                          itemSize: 30,
+                                                          itemSize: 23,
                                                           onRatingUpdate:
                                                               (rating) {
                                                             setState(() {
@@ -828,9 +830,14 @@ class _SurveyDetailPageState extends State<SurveyDetailPage> {
                                                         ),
                                                       ),
                                                     ),
-                                                    Text((currentQuestionData[
-                                                            'options'][1])
-                                                        .toString()),
+                                                    Text(
+                                                      (currentQuestionData[
+                                                              'options'][1])
+                                                          .toString(),
+                                                      style: const TextStyle(
+                                                        fontSize: 12,
+                                                      ),
+                                                    ),
                                                   ],
                                                 ),
                                                 ErrorMessageWidget(

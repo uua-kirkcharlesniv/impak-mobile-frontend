@@ -65,6 +65,7 @@ dependencies:
   sticky_headers: ^0.3.0+2
   flutter_sticky_header: ^0.6.5
   intl: ^0.18.1
+  flutter_speed_dial: ^7.0.0
 
 dev_dependencies:
   flutter_test:
