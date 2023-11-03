@@ -20,7 +20,7 @@ class CommunityBloc extends Bloc<CommunityEvent, CommunityState> {
         'type': isGroup ? 'groups' : 'departments',
       });
 
-      await Future.delayed(const Duration(seconds: 5));
+      await Future.delayed(const Duration(seconds: 2));
 
       emit(LoadedCommunityState(communities: communities.body['data']));
     });

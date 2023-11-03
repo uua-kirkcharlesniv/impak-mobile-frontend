@@ -23,6 +23,7 @@ class GroupListWidget extends StatelessWidget {
           MaterialPageRoute(
             builder: (context) => GroupDetailPage(
               isGroup: isGroup,
+              data: data,
             ),
           ),
         );

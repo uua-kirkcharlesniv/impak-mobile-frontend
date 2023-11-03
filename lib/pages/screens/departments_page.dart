@@ -84,6 +84,7 @@ class DepartmentsPage extends StatelessWidget {
                         verticalOffset: 50,
                         child: FadeInAnimation(
                           child: GroupListWidget(
+                            isGroup: false,
                             isFirst: isFirst,
                             index: index,
                             data: state.communities[index],
