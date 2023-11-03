@@ -1,4 +1,5 @@
 import 'package:chopper/chopper.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
@@ -25,7 +26,9 @@ void main() async {
   final locator = GetIt.instance;
   locator.registerSingleton<ChopperClient>(
     ChopperClient(
-      baseUrl: Uri.parse('http://acme.impak.test/api'),
+      baseUrl: Uri.parse(
+        !kDebugMode ? 'https://impak.app/api' : 'http://acme.impak.test/api',
+      ),
       services: [
         ApiService.create(),
       ],

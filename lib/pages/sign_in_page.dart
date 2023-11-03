@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:formz/formz.dart';
@@ -29,7 +30,9 @@ class _SignInState extends State<SignIn> {
 
   Future<void> _validateUrl() async {
     try {
-      final url = 'http://${_controller.text}.impak.test';
+      final url = kDebugMode
+          ? 'http://${_controller.text}.impak.test'
+          : 'https://${_controller.text}.impak.app';
       final uri = Uri.parse(url);
 
       final client = http.Client();
