@@ -1,4 +1,7 @@
+import 'package:chopper/chopper.dart';
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
+import 'package:impak_mobile/chopper/api_service.dart';
 
 class AddEntryPage extends StatefulWidget {
   const AddEntryPage({super.key});
@@ -9,12 +12,13 @@ class AddEntryPage extends StatefulWidget {
 
 class _AddEntryPageState extends State<AddEntryPage> {
   int? selected;
+  final _controller = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
     final faces = [
       {
-        'image': 'assets/faces_2.png',
+        'image': 'assets/faces_5.png',
         'name': 'Very calm',
       },
       {
@@ -26,7 +30,7 @@ class _AddEntryPageState extends State<AddEntryPage> {
         'name': 'Neutral',
       },
       {
-        'image': 'assets/faces_5.png',
+        'image': 'assets/faces_2.png',
         'name': 'Stressed',
       },
       {
@@ -96,7 +100,7 @@ class _AddEntryPageState extends State<AddEntryPage> {
                         ],
                       ),
                     ),
-                    const SizedBox(height: 30),
+                    const SizedBox(height: 15),
                     Expanded(
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -155,11 +159,30 @@ class _AddEntryPageState extends State<AddEntryPage> {
                         }),
                       ),
                     ),
-                    const SizedBox(height: 30),
+                    TextField(
+                      controller: _controller,
+                      decoration: const InputDecoration(
+                        border: OutlineInputBorder(),
+                        labelText: 'Add your journal text entry',
+                      ),
+                      maxLines: 3,
+                      maxLength: 1000,
+                    ),
+                    const SizedBox(height: 15),
                     GestureDetector(
-                      onTap: () {
+                      onTap: () async {
                         if (selected != null) {
-                          Navigator.pop(context);
+                          final validate = await GetIt.instance
+                              .get<ChopperClient>()
+                              .getService<ApiService>()
+                              .submitMood({
+                            'mood': selected! + 1,
+                            'journal': _controller.text,
+                          });
+
+                          if (validate.isSuccessful && context.mounted) {
+                            Navigator.pop(context);
+                          }
                         }
                       },
                       child: AnimatedContainer(
