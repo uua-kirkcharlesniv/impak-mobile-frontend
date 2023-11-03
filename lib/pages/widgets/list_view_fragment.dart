@@ -75,8 +75,8 @@ class ListViewFragment extends StatelessWidget {
                           borderRadius: BorderRadius.circular(9),
                         ),
                         padding: const EdgeInsets.all(12),
-                        child: Row(
-                          children: const [
+                        child: const Row(
+                          children: [
                             Icon(
                               CupertinoIcons.search,
                               color: Color(0xffADB5BD),

@@ -42,8 +42,8 @@ class HomepageSurveyWidget extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 8),
-                  Row(
-                    children: const [
+                  const Row(
+                    children: [
                       SurveyClip(
                         icon: FontAwesomeIcons.solidStar,
                         name: 'Post-Event',
@@ -71,20 +71,20 @@ class HomepageSurveyWidget extends StatelessWidget {
                   bottomRight: Radius.circular(5),
                 ),
               ),
-              child: Column(
+              child: const Column(
                 children: [
-                  const Text(
+                  Text(
                     'Time Limit',
                     style: TextStyle(
                       fontWeight: FontWeight.w500,
                       fontSize: 10,
                     ),
                   ),
-                  const SizedBox(height: 4),
+                  SizedBox(height: 4),
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.center,
-                    children: const [
+                    children: [
                       Icon(
                         Icons.timer,
                         size: 12,

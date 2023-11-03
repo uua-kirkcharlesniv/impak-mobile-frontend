@@ -35,9 +35,9 @@ class MoodEntryWidget extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 12),
-              Column(
+              const Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: const [
+                children: [
                   Text(
                     '11:26 AM',
                     style: TextStyle(
@@ -72,8 +72,8 @@ class MoodEntryWidget extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 20),
-          Row(
-            children: const [
+          const Row(
+            children: [
               MoodClip(name: 'Happy'),
               SizedBox(width: 4),
               MoodClip(name: 'Amazing'),

@@ -3,7 +3,6 @@ import 'package:chopper/chopper.dart';
 import 'package:equatable/equatable.dart';
 import 'package:get_it/get_it.dart';
 import 'package:impak_mobile/chopper/api_service.dart';
-import 'package:impak_mobile/navigation_service.dart';
 
 part 'surveys_event.dart';
 part 'surveys_state.dart';

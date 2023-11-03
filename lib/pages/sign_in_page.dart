@@ -43,26 +43,30 @@ class _SignInState extends State<SignIn> {
           _isFindingCompany = false;
         });
       } else {
+        if (context.mounted) {
+          ScaffoldMessenger.of(context)
+            ..hideCurrentSnackBar()
+            ..showSnackBar(
+              const SnackBar(
+                content: Text(
+                  'We cannot find your company. Try again.',
+                ),
+              ),
+            );
+        }
+      }
+    } catch (e) {
+      if (context.mounted) {
         ScaffoldMessenger.of(context)
           ..hideCurrentSnackBar()
           ..showSnackBar(
             const SnackBar(
               content: Text(
-                'We cannot find your company. Try again.',
+                'Something wen\'t wrong processing your request. Try again later.',
               ),
             ),
           );
       }
-    } catch (e) {
-      ScaffoldMessenger.of(context)
-        ..hideCurrentSnackBar()
-        ..showSnackBar(
-          const SnackBar(
-            content: Text(
-              'Something wen\'t wrong processing your request. Try again later.',
-            ),
-          ),
-        );
     }
   }
 

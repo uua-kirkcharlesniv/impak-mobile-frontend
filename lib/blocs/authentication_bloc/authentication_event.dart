@@ -27,5 +27,5 @@ class AuthenticationLogoutRequested extends AuthenticationEvent {}
 class ProfileUpdated extends AuthenticationEvent {
   final UserData userData;
 
-  ProfileUpdated(this.userData);
+  const ProfileUpdated(this.userData);
 }

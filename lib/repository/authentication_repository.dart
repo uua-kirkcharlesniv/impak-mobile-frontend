@@ -1,13 +1,10 @@
 // ignore_for_file: avoid_dynamic_calls
 
 import 'dart:async';
-import 'dart:convert';
 
 import 'package:chopper/chopper.dart';
-// import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get_it/get_it.dart';
-import 'package:hive/hive.dart';
 import 'package:impak_mobile/chopper/api_service.dart';
 import 'package:impak_mobile/models/user_data.dart';
 
@@ -61,9 +58,6 @@ class AuthenticationRepository {
       'password': password,
       'notification_token': token,
     });
-    print(resp.error);
-    print(resp.headers);
-    print(resp.base.request?.url);
 
     if (!resp.isSuccessful) {
       throw Exception('The username or password you entered is incorrect.');

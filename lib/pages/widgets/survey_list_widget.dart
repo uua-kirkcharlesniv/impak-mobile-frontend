@@ -106,7 +106,7 @@ class SurveyListWidget extends StatelessWidget {
                                       color: Colors.black,
                                       fontSize: 10,
                                     ),
-                                    children: <TextSpan>[
+                                    children: const <TextSpan>[
                                       TextSpan(
                                           text: 'Today 8 PM',
                                           style: TextStyle(
@@ -198,20 +198,20 @@ class SurveyListWidget extends StatelessWidget {
                     border: Border.all(
                       color: const Color(0xffEBEBEB),
                     )),
-                child: Column(
+                child: const Column(
                   children: [
-                    const Text(
+                    Text(
                       'Time Limit',
                       style: TextStyle(
                         fontWeight: FontWeight.w500,
                         fontSize: 10,
                       ),
                     ),
-                    const SizedBox(height: 4),
+                    SizedBox(height: 4),
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       mainAxisAlignment: MainAxisAlignment.center,
-                      children: const [
+                      children: [
                         Icon(
                           Icons.timer,
                           size: 12,

@@ -39,6 +39,7 @@ class _SurveyDetailPageState extends State<SurveyDetailPage> {
   int totalSections = 9999;
   int totalQuestions = 9999;
   List<int> totalQuestionsPerSection = [];
+  // ignore: prefer_final_fields
   Map<String, dynamic> _answers = {};
   dynamic answer;
   String? error;
@@ -696,7 +697,8 @@ class _SurveyDetailPageState extends State<SurveyDetailPage> {
                                                           TimeOfDay.now(),
                                                     );
                                                   },
-                                                  child: Text('Select time'),
+                                                  child:
+                                                      const Text('Select time'),
                                                 ),
                                               ],
                                             );
@@ -936,7 +938,6 @@ class _SurveyDetailPageState extends State<SurveyDetailPage> {
                                             });
 
                                           default:
-                                            print(currentQuestionData['type']);
                                             break;
                                         }
 
