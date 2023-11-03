@@ -171,4 +171,30 @@ final class _$ApiService extends ApiService {
     );
     return client.send<dynamic, dynamic>($request);
   }
+
+  @override
+  Future<Response<dynamic>> changePassword(Map<String, dynamic> body) {
+    final Uri $url = Uri.parse('/change-password');
+    final $body = body;
+    final Request $request = Request(
+      'POST',
+      $url,
+      client.baseUrl,
+      body: $body,
+    );
+    return client.send<dynamic, dynamic>($request);
+  }
+
+  @override
+  Future<Response<dynamic>> updateProfile(Map<String, dynamic> body) {
+    final Uri $url = Uri.parse('/update-profile');
+    final $body = body;
+    final Request $request = Request(
+      'POST',
+      $url,
+      client.baseUrl,
+      body: $body,
+    );
+    return client.send<dynamic, dynamic>($request);
+  }
 }

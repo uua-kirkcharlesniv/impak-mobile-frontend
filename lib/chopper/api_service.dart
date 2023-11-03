@@ -45,4 +45,10 @@ abstract class ApiService extends ChopperService {
 
   @Get(path: 'mood/analytics/monthly')
   Future<Response> getMonthlyAnalytics();
+
+  @Post(path: 'change-password')
+  Future<Response> changePassword(@Body() Map<String, dynamic> body);
+
+  @Post(path: 'update-profile')
+  Future<Response> updateProfile(@Body() Map<String, dynamic> body);
 }

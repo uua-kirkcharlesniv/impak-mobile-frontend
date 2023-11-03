@@ -76,7 +76,8 @@ class ProfilePage extends StatelessWidget {
                                       radius: 48 - 20,
                                       backgroundImage: NetworkImage(
                                         Uri.encodeFull(
-                                            'https://ui-avatars.com/api/?name=$name&format=png'),
+                                          'https://ui-avatars.com/api/?name=$name&format=png',
+                                        ),
                                       ),
                                       backgroundColor: Colors.grey.shade900,
                                     ),
@@ -184,62 +185,62 @@ class ProfilePage extends StatelessWidget {
                               trailing: const Icon(Icons.chevron_right),
                             ),
                             const SizedBox(height: 16),
-                            const Text(
-                              'Notifications',
-                              style: TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w600,
-                                color: Color(0xff0F172A),
-                              ),
-                            ),
-                            const SizedBox(height: 16),
-                            ListTile(
-                              contentPadding: EdgeInsets.zero,
-                              leading: Container(
-                                decoration: BoxDecoration(
-                                  color: const Color(0xffE2E8F0),
-                                  borderRadius: BorderRadius.circular(4),
-                                ),
-                                padding: const EdgeInsets.all(8),
-                                child: const Icon(FontAwesomeIcons.bell),
-                              ),
-                              title: const Text(
-                                'In-app Notifications',
-                                style: TextStyle(
-                                  color: Color(0xff787878),
-                                  fontSize: 14,
-                                ),
-                              ),
-                              trailing: CupertinoSwitch(
-                                value: true,
-                                activeColor: const Color(0xff6366F1),
-                                onChanged: (data) {},
-                              ),
-                            ),
-                            ListTile(
-                              contentPadding: EdgeInsets.zero,
-                              leading: Container(
-                                decoration: BoxDecoration(
-                                  color: const Color(0xffE2E8F0),
-                                  borderRadius: BorderRadius.circular(4),
-                                ),
-                                padding: const EdgeInsets.all(8),
-                                child: const Icon(Icons.email_outlined),
-                              ),
-                              title: const Text(
-                                'Email Notifications',
-                                style: TextStyle(
-                                  color: Color(0xff787878),
-                                  fontSize: 14,
-                                ),
-                              ),
-                              trailing: CupertinoSwitch(
-                                value: true,
-                                activeColor: const Color(0xff6366F1),
-                                onChanged: (data) {},
-                              ),
-                            ),
-                            const SizedBox(height: 16),
+                            // const Text(
+                            //   'Notifications',
+                            //   style: TextStyle(
+                            //     fontSize: 14,
+                            //     fontWeight: FontWeight.w600,
+                            //     color: Color(0xff0F172A),
+                            //   ),
+                            // ),
+                            // const SizedBox(height: 16),
+                            // ListTile(
+                            //   contentPadding: EdgeInsets.zero,
+                            //   leading: Container(
+                            //     decoration: BoxDecoration(
+                            //       color: const Color(0xffE2E8F0),
+                            //       borderRadius: BorderRadius.circular(4),
+                            //     ),
+                            //     padding: const EdgeInsets.all(8),
+                            //     child: const Icon(FontAwesomeIcons.bell),
+                            //   ),
+                            //   title: const Text(
+                            //     'In-app Notifications',
+                            //     style: TextStyle(
+                            //       color: Color(0xff787878),
+                            //       fontSize: 14,
+                            //     ),
+                            //   ),
+                            //   trailing: CupertinoSwitch(
+                            //     value: true,
+                            //     activeColor: const Color(0xff6366F1),
+                            //     onChanged: (data) {},
+                            //   ),
+                            // ),
+                            // ListTile(
+                            //   contentPadding: EdgeInsets.zero,
+                            //   leading: Container(
+                            //     decoration: BoxDecoration(
+                            //       color: const Color(0xffE2E8F0),
+                            //       borderRadius: BorderRadius.circular(4),
+                            //     ),
+                            //     padding: const EdgeInsets.all(8),
+                            //     child: const Icon(Icons.email_outlined),
+                            //   ),
+                            //   title: const Text(
+                            //     'Email Notifications',
+                            //     style: TextStyle(
+                            //       color: Color(0xff787878),
+                            //       fontSize: 14,
+                            //     ),
+                            //   ),
+                            //   trailing: CupertinoSwitch(
+                            //     value: true,
+                            //     activeColor: const Color(0xff6366F1),
+                            //     onChanged: (data) {},
+                            //   ),
+                            // ),
+                            // const SizedBox(height: 16),
                             const Text(
                               'More',
                               style: TextStyle(
