@@ -245,24 +245,24 @@ class _SignInState extends State<SignIn> {
                   ),
                 ),
               ),
-              const SizedBox(height: 24),
-              RichText(
-                textAlign: TextAlign.center,
-                text: TextSpan(
-                  text: 'Don\'t know how to find your company?\n',
-                  style: Theme.of(context).textTheme.bodyLarge,
-                  children: const [
-                    TextSpan(
-                      text: 'Send a magic login link',
-                      style: TextStyle(
-                        color: Color(0xff818CF8),
-                        fontWeight: FontWeight.w600,
-                        decoration: TextDecoration.underline,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+              // const SizedBox(height: 24),
+              // RichText(
+              //   textAlign: TextAlign.center,
+              //   text: TextSpan(
+              //     text: 'Don\'t know how to find your company?\n',
+              //     style: Theme.of(context).textTheme.bodyLarge,
+              //     children: const [
+              //       TextSpan(
+              //         text: 'Send a magic login link',
+              //         style: TextStyle(
+              //           color: Color(0xff818CF8),
+              //           fontWeight: FontWeight.w600,
+              //           decoration: TextDecoration.underline,
+              //         ),
+              //       ),
+              //     ],
+              //   ),
+              // ),
             ],
           ),
         ),
