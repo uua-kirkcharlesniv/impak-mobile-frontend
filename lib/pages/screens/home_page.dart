@@ -127,8 +127,8 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
-  int _determineFace(int average) {
-    if (average >= 0 && average <= 20) {
+  int? _determineFace(int average) {
+    if (average > 0 && average <= 20) {
       return 1;
     } else if (average > 20 && average <= 40) {
       return 2;
@@ -140,7 +140,7 @@ class _HomePageState extends State<HomePage> {
       return 5;
     }
 
-    return 3;
+    return null;
   }
 
   Future<void> _fetchTimelineData() async {
@@ -149,15 +149,17 @@ class _HomePageState extends State<HomePage> {
         .getService<ApiService>()
         .getTimeline();
 
-    final timelineDataRaw = response.body['data'] as Map;
+    final timelineDataRaw = response.body['data'];
 
-    timelineDataRaw.forEach((key, value) {
-      final entries = List<Map>.from(value);
+    if (timelineDataRaw is Map) {
+      timelineDataRaw.forEach((key, value) {
+        final entries = List<Map>.from(value);
 
-      setState(() {
-        _timelineData[key] = entries;
+        setState(() {
+          _timelineData[key] = entries;
+        });
       });
-    });
+    }
   }
 
   @override
@@ -509,19 +511,28 @@ class _HomePageState extends State<HomePage> {
                                                   ),
                                                 ),
                                                 const SizedBox(height: 8),
-                                                Row(
-                                                  children: [
-                                                    Image.asset(
-                                                      'assets/faces_${_determineFace(_weeklyAverageValue)}.png',
-                                                    ),
-                                                    const SizedBox(width: 12),
-                                                    const Expanded(
-                                                      child: Text(
-                                                        'is your average mood this period.',
+                                                Builder(builder: (context) {
+                                                  final mood = _determineFace(
+                                                      _weeklyAverageValue);
+
+                                                  if (mood == null) {
+                                                    return const SizedBox();
+                                                  }
+
+                                                  return Row(
+                                                    children: [
+                                                      Image.asset(
+                                                        'assets/faces_$mood.png',
                                                       ),
-                                                    )
-                                                  ],
-                                                ),
+                                                      const SizedBox(width: 12),
+                                                      const Expanded(
+                                                        child: Text(
+                                                          'is your average mood this period.',
+                                                        ),
+                                                      )
+                                                    ],
+                                                  );
+                                                }),
                                               ],
                                             ),
                                           ),
