@@ -1,14 +1,18 @@
+import 'package:chopper/chopper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:get_it/get_it.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:impak_mobile/blocs/authentication_bloc/authentication_bloc.dart';
 import 'package:impak_mobile/blocs/profile_bloc/profile_bloc.dart';
+import 'package:impak_mobile/chopper/api_service.dart';
 import 'package:impak_mobile/pages/sign_in_page.dart';
 import 'package:impak_mobile/pages/subscreens/change_password_page.dart';
 import 'package:impak_mobile/pages/subscreens/update_profile_page.dart';
 import 'package:impak_mobile/pages/widgets/list_view_fragment.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 
 class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});
@@ -241,6 +245,67 @@ class ProfilePage extends StatelessWidget {
                             // ),
                             // const SizedBox(height: 16),
                             const Text(
+                              'Legal',
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w600,
+                                color: Color(0xff0F172A),
+                              ),
+                            ),
+                            const SizedBox(height: 16),
+                            ListTile(
+                              onTap: () {
+                                launchUrlString(
+                                  'https://impak.app/privacy-policy',
+                                );
+                              },
+                              contentPadding: EdgeInsets.zero,
+                              leading: Container(
+                                decoration: BoxDecoration(
+                                  color: const Color(0xffE2E8F0),
+                                  borderRadius: BorderRadius.circular(4),
+                                ),
+                                padding: const EdgeInsets.all(8),
+                                child: const Icon(Icons.policy),
+                              ),
+                              title: const Text(
+                                'Privacy Policy',
+                                style: TextStyle(
+                                  color: Color(0xff787878),
+                                  fontSize: 14,
+                                ),
+                              ),
+                            ),
+                            ListTile(
+                              contentPadding: EdgeInsets.zero,
+                              leading: Container(
+                                decoration: BoxDecoration(
+                                  color: const Color(0xffE2E8F0),
+                                  borderRadius: BorderRadius.circular(4),
+                                ),
+                                padding: const EdgeInsets.all(8),
+                                child: const Icon(Icons.policy),
+                              ),
+                              onTap: () {
+                                launchUrlString(
+                                  'https://impak.app/terms-of-service',
+                                );
+                              },
+                              title: const Text(
+                                'Terms of Service',
+                                style: TextStyle(
+                                  color: Color(0xff787878),
+                                  fontSize: 14,
+                                ),
+                              ),
+                              // trailing: CupertinoSwitch(
+                              //   value: true,
+                              //   activeColor: const Color(0xff6366F1),
+                              //   onChanged: (data) {},
+                              // ),
+                            ),
+                            const SizedBox(height: 16),
+                            const Text(
                               'More',
                               style: TextStyle(
                                 fontSize: 14,
@@ -329,14 +394,24 @@ class ProfilePage extends StatelessWidget {
                                                             32),
                                                   ),
                                                 ),
-                                                onPressed: () {
-                                                  Navigator.pushAndRemoveUntil(
-                                                    context,
-                                                    MaterialPageRoute(
-                                                        builder: (_) =>
-                                                            const SignIn()),
-                                                    (route) => false,
-                                                  );
+                                                onPressed: () async {
+                                                  final validate = await GetIt
+                                                      .instance
+                                                      .get<ChopperClient>()
+                                                      .getService<ApiService>()
+                                                      .deleteAccount();
+
+                                                  if (validate.isSuccessful &&
+                                                      context.mounted) {
+                                                    Navigator
+                                                        .pushAndRemoveUntil(
+                                                      context,
+                                                      MaterialPageRoute(
+                                                          builder: (_) =>
+                                                              const SignIn()),
+                                                      (route) => false,
+                                                    );
+                                                  }
                                                 },
                                                 child: Text(
                                                   'Yes, Delete',

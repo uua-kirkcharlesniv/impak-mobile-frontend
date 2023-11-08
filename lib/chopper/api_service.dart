@@ -51,4 +51,7 @@ abstract class ApiService extends ChopperService {
 
   @Post(path: 'update-profile')
   Future<Response> updateProfile(@Body() Map<String, dynamic> body);
+
+  @Post(path: 'delete-account')
+  Future<Response> deleteAccount();
 }
