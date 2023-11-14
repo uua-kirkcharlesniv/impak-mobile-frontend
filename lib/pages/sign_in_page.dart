@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -15,6 +16,7 @@ class SignIn extends StatefulWidget {
 
 class _SignInState extends State<SignIn> {
   bool _isFindingCompany = true;
+  bool _obscureText = true;
 
   final _controller = TextEditingController();
   final _emailController = TextEditingController();
@@ -198,8 +200,6 @@ class _SignInState extends State<SignIn> {
                     ),
                     const SizedBox(height: 8),
                     TextField(
-                      onEditingComplete: () =>
-                          FocusScope.of(context).nextFocus(),
                       onChanged: (password) => context
                           .read<LoginBloc>()
                           .add(PasswordChanged(password)),
@@ -207,7 +207,7 @@ class _SignInState extends State<SignIn> {
                         AutofillHints.password,
                       ],
                       controller: _passwordController,
-                      obscureText: true,
+                      obscureText: _obscureText,
                       decoration: InputDecoration(
                         hintText: 'Password',
                         border: OutlineInputBorder(
@@ -217,6 +217,18 @@ class _SignInState extends State<SignIn> {
                         ),
                         fillColor: Colors.white,
                         filled: true,
+                        suffixIcon: IconButton(
+                          onPressed: () {
+                            setState(() {
+                              _obscureText = !_obscureText;
+                            });
+                          },
+                          icon: Icon(
+                            !_obscureText
+                                ? CupertinoIcons.eye_fill
+                                : CupertinoIcons.eye_slash,
+                          ),
+                        ),
                       ),
                     ),
                     const SizedBox(height: 8),
