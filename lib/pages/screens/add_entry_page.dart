@@ -1,6 +1,9 @@
 import 'package:chopper/chopper.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get_it/get_it.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:impak_mobile/chopper/api_service.dart';
 
 class AddEntryPage extends StatefulWidget {
@@ -11,53 +14,73 @@ class AddEntryPage extends StatefulWidget {
 }
 
 class _AddEntryPageState extends State<AddEntryPage> {
-  int? selected;
+  int selected = 5;
   final _controller = TextEditingController();
+
+  final colors = const [
+    Color(0xffA18FFF),
+    Color(0xffFE814B),
+    Color(0xff926247),
+    Color.fromARGB(255, 248, 193, 64),
+    Color(0xff9BB068),
+  ];
+
+  Widget get getFaceDescriptor {
+    var list = ['depressed', 'sad', 'neutral', 'happy', 'overjoyed'];
+
+    return SizedBox(
+      child: SvgPicture.asset(
+        'assets/${list[selected - 1]}.svg',
+        height: 200,
+      ),
+    );
+  }
+
+  String get getMoodDescriptorStart {
+    switch (selected) {
+      case 1:
+        return 'I am feeling';
+      case 2:
+        return 'I am feeling';
+      case 3:
+      case 4:
+        return 'I feel';
+      case 5:
+        return 'I am';
+      default:
+        return 'I feel';
+    }
+  }
+
+  String get getMoodDescriptorBold {
+    switch (selected) {
+      case 1:
+        return 'very sad';
+      case 2:
+        return 'sad';
+      case 3:
+        return 'neutral';
+      case 4:
+        return 'happy';
+      case 5:
+        return 'very happy';
+      default:
+        return 'neutral';
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    final faces = [
-      {
-        'image': 'assets/faces_5.png',
-        'name': 'Very calm',
-      },
-      {
-        'image': 'assets/faces_4.png',
-        'name': 'Calm',
-      },
-      {
-        'image': 'assets/faces_3.png',
-        'name': 'Neutral',
-      },
-      {
-        'image': 'assets/faces_2.png',
-        'name': 'Stressed',
-      },
-      {
-        'image': 'assets/faces_1.png',
-        'name': 'Very stressed',
-      },
-    ];
-
     return Scaffold(
       body: Stack(
         children: [
           Positioned.fill(
-            child: Container(
-                width: double.infinity,
-                height: double.infinity,
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [
-                      const Color(0xffF2F1FF),
-                      const Color(0xffF2F1FF),
-                      const Color(0xffD9D9D9).withOpacity(0),
-                      const Color(0xffD9D9D9).withOpacity(0),
-                    ],
-                  ),
-                )),
+            child: AnimatedContainer(
+              width: double.infinity,
+              height: double.infinity,
+              duration: const Duration(milliseconds: 300),
+              color: colors[selected - 1],
+            ),
           ),
           Positioned.fill(
             child: SizedBox.expand(
@@ -75,7 +98,7 @@ class _AddEntryPageState extends State<AddEntryPage> {
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(12),
                         border: Border.all(
-                          color: const Color(0xffE2E2F5),
+                          color: Colors.white,
                         ),
                       ),
                       child: const Column(
@@ -85,6 +108,7 @@ class _AddEntryPageState extends State<AddEntryPage> {
                             style: TextStyle(
                               fontWeight: FontWeight.w600,
                               fontSize: 18,
+                              color: Colors.white,
                             ),
                           ),
                           SizedBox(height: 12),
@@ -92,7 +116,7 @@ class _AddEntryPageState extends State<AddEntryPage> {
                             'Users typically log their moods at regular intervals, such as daily or weekly, using a variety of emotional descriptors.',
                             style: TextStyle(
                               fontWeight: FontWeight.w400,
-                              color: Color(0xff525969),
+                              color: Colors.white,
                               fontSize: 14,
                             ),
                             textAlign: TextAlign.center,
@@ -103,86 +127,102 @@ class _AddEntryPageState extends State<AddEntryPage> {
                     const SizedBox(height: 15),
                     Expanded(
                       child: Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: List.generate(5, (index) {
-                          return GestureDetector(
-                            onTap: () {
-                              setState(() {
-                                selected = index;
-                              });
-                            },
-                            child: Container(
-                              padding: const EdgeInsets.all(12),
-                              width: double.infinity,
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(8),
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          getFaceDescriptor,
+                          SizedBox(
+                            child: RatingBar.builder(
+                              initialRating: selected.toDouble(),
+                              minRating: 1,
+                              direction: Axis.horizontal,
+                              allowHalfRating: false,
+                              itemCount: 5,
+                              itemBuilder: (context, _) => Icon(
+                                Icons.favorite,
+                                color: Colors.white.withOpacity(0.85),
+                                size: 10,
                               ),
-                              child: Row(
-                                children: [
-                                  Image.asset(
-                                    faces[index]['image'].toString(),
-                                  ),
-                                  const SizedBox(width: 12),
-                                  Text(
-                                    faces[index]['name'].toString(),
-                                    style: const TextStyle(
-                                      fontWeight: FontWeight.w600,
-                                      fontSize: 16,
-                                    ),
-                                  ),
-                                  const Spacer(),
-                                  Container(
-                                    padding: EdgeInsets.all(
-                                        selected == index ? 4 : 10),
-                                    decoration: BoxDecoration(
-                                      shape: BoxShape.circle,
-                                      border: Border.all(
-                                        color: const Color(0xffDDDDDD),
-                                      ),
-                                      color: selected == index
-                                          ? const Color(0xff4F46E5)
-                                          : null,
-                                    ),
-                                    child: selected == index
-                                        ? const Icon(
-                                            Icons.check,
-                                            color: Colors.white,
-                                            size: 12,
-                                          )
-                                        : null,
-                                  ),
-                                ],
-                              ),
+                              glowColor: Colors.white,
+                              glow: false,
+                              itemSize: 32,
+                              updateOnDrag: true,
+                              onRatingUpdate: (rating) {
+                                setState(() {
+                                  selected = rating.toInt();
+                                });
+                              },
                             ),
-                          );
-                        }),
+                          ),
+                          RichText(
+                            text: TextSpan(
+                                text: '$getMoodDescriptorStart ',
+                                style: GoogleFonts.urbanist(
+                                  color: Colors.white,
+                                  fontSize: 24,
+                                ),
+                                children: [
+                                  TextSpan(
+                                    text: getMoodDescriptorBold,
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.w900,
+                                    ),
+                                  ),
+                                ]),
+                          ),
+                        ],
                       ),
                     ),
-                    TextField(
-                      controller: _controller,
-                      decoration: const InputDecoration(
-                        border: OutlineInputBorder(),
-                        labelText: 'Add your journal text entry',
-                      ),
-                      maxLines: 3,
-                      maxLength: 1000,
-                    ),
+                    Builder(builder: (context) {
+                      final borderRadius = BorderRadius.circular(24);
+                      final border = OutlineInputBorder(
+                        borderRadius: borderRadius,
+                        borderSide: const BorderSide(
+                          color: Color.fromARGB(255, 138, 157, 94),
+                          width: 3,
+                        ),
+                      );
+
+                      return Container(
+                        decoration: BoxDecoration(
+                          borderRadius: borderRadius,
+                          boxShadow: [
+                            BoxShadow(
+                              color: const Color.fromARGB(255, 149, 164, 113)
+                                  .withOpacity(0.5),
+                              spreadRadius: 3,
+                            )
+                          ],
+                        ),
+                        child: TextField(
+                          controller: _controller,
+                          textInputAction: TextInputAction.done,
+                          decoration: InputDecoration(
+                            filled: true,
+                            fillColor: Colors.white,
+                            border: border,
+                            enabledBorder: border,
+                            hintText: 'Record a short snippet of your day!',
+                          ),
+                          maxLines: 3,
+                          keyboardType: TextInputType.multiline,
+                        ),
+                      );
+                    }),
                     const SizedBox(height: 15),
                     GestureDetector(
                       onTap: () async {
-                        if (selected != null) {
-                          final validate = await GetIt.instance
-                              .get<ChopperClient>()
-                              .getService<ApiService>()
-                              .submitMood({
-                            'mood': selected! + 1,
-                            'journal': _controller.text,
-                          });
+                        final invert = 5 - selected + 1;
 
-                          if (validate.isSuccessful && context.mounted) {
-                            Navigator.pop(context);
-                          }
+                        final validate = await GetIt.instance
+                            .get<ChopperClient>()
+                            .getService<ApiService>()
+                            .submitMood({
+                          'mood': invert,
+                          'journal': _controller.text,
+                        });
+
+                        if (validate.isSuccessful && context.mounted) {
+                          Navigator.pop(context);
                         }
                       },
                       child: AnimatedContainer(
@@ -190,9 +230,7 @@ class _AddEntryPageState extends State<AddEntryPage> {
                         width: double.infinity,
                         padding: const EdgeInsets.symmetric(vertical: 20),
                         decoration: BoxDecoration(
-                          color: selected != null
-                              ? const Color(0xff6366F1)
-                              : const Color(0xffEAEAF9),
+                          color: const Color(0xff6366F1),
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: Center(
