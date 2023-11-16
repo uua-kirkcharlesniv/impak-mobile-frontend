@@ -39,7 +39,7 @@ class SurveyListWidget extends StatelessWidget {
           children: [
             ShaderMask(
               shaderCallback: (Rect bounds) {
-                return LinearGradient(
+                return const LinearGradient(
                   begin: Alignment.centerLeft,
                   end: Alignment.centerRight,
                   colors: [
