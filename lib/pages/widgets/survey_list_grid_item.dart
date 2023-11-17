@@ -79,17 +79,17 @@ class SurveyListGridItem extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 10),
-          const Row(
+          Row(
             children: [
-              Icon(
+              const Icon(
                 CupertinoIcons.clock_fill,
                 color: Colors.grey,
                 size: 12,
               ),
-              SizedBox(width: 2.5),
+              const SizedBox(width: 2.5),
               Text(
-                '9 PM, Today',
-                style: TextStyle(
+                data['open_at'].toString(),
+                style: const TextStyle(
                   fontSize: 10,
                   color: Color(0xff0F172A),
                 ),

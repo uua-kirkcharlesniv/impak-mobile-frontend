@@ -167,9 +167,10 @@ class SurveyListWidget extends StatelessWidget {
                                         color: Colors.black,
                                         fontSize: 10,
                                       ),
-                                      children: const <TextSpan>[
+                                      children: <TextSpan>[
                                         TextSpan(
-                                            text: 'Today 8 PM',
+                                            text: data['last_entry_date']
+                                                .toString(),
                                             style: TextStyle(
                                                 fontWeight: FontWeight.bold)),
                                       ],
