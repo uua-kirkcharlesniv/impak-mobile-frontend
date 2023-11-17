@@ -3,15 +3,20 @@ import 'dart:ui';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:impak_mobile/blocs/survey/bloc/survey_bloc.dart';
+import 'package:impak_mobile/pages/subscreens/survey_detail_page.dart';
 import '../widgets/survey_list_widget.dart';
 
 class SurveyListGridItem extends StatelessWidget {
   const SurveyListGridItem({
     super.key,
     this.data,
+    this.onFinish,
   });
 
   final dynamic data;
+  final VoidCallback? onFinish;
 
   @override
   Widget build(BuildContext context) {
@@ -148,33 +153,51 @@ class SurveyListGridItem extends StatelessWidget {
               );
             }
 
-            return Container(
-              padding: const EdgeInsets.symmetric(vertical: 8),
-              width: double.infinity,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(6),
-                boxShadow: [
-                  BoxShadow(
-                    color: const Color(0xff544BE8).withOpacity(0.33),
-                    blurRadius: 13,
-                    offset: const Offset(0, 4),
-                  )
-                ],
-                gradient: const LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [
-                    Color(0xff7C74FF),
-                    Color(0xff544BE8),
+            return GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => BlocProvider(
+                      create: (context) => SurveyBloc(),
+                      child: SurveyDetailPage(
+                        id: data['id'],
+                        name: data['name'],
+                      ),
+                    ),
+                  ),
+                ).then((value) {
+                  onFinish?.call();
+                });
+              },
+              child: Container(
+                padding: const EdgeInsets.symmetric(vertical: 8),
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(6),
+                  boxShadow: [
+                    BoxShadow(
+                      color: const Color(0xff544BE8).withOpacity(0.33),
+                      blurRadius: 13,
+                      offset: const Offset(0, 4),
+                    )
                   ],
+                  gradient: const LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      Color(0xff7C74FF),
+                      Color(0xff544BE8),
+                    ],
+                  ),
                 ),
-              ),
-              child: const Center(
-                child: Text(
-                  'Start Survey',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 12,
+                child: const Center(
+                  child: Text(
+                    'Start Survey',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 12,
+                    ),
                   ),
                 ),
               ),

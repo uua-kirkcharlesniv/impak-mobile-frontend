@@ -72,7 +72,12 @@ class SurveyPage extends StatelessWidget {
                     itemBuilder: (context, index) {
                       final data = state.ongoing[index];
 
-                      return SurveyListGridItem(data: data);
+                      return SurveyListGridItem(
+                        data: data,
+                        onFinish: () {
+                          context.read<SurveysBloc>().add(LoadSurveys());
+                        },
+                      );
                     },
                   ),
                   Builder(

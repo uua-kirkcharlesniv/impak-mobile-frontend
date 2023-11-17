@@ -2,16 +2,20 @@
 
 import 'dart:convert';
 
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:chopper/chopper.dart';
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_countdown_timer/flutter_countdown_timer.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get_it/get_it.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:impak_mobile/blocs/survey/bloc/survey_bloc.dart';
 import 'package:impak_mobile/chopper/api_service.dart';
+import 'package:simple_gradient_text/simple_gradient_text.dart';
+import 'package:syncfusion_flutter_core/theme.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
+import 'package:syncfusion_flutter_sliders/sliders.dart';
 
 class SurveyDetailPage extends StatefulWidget {
   const SurveyDetailPage({
@@ -198,6 +202,7 @@ class _SurveyDetailPageState extends State<SurveyDetailPage> {
     switch (currentQuestionData['type']) {
       case 'radio':
         setState(() {
+          selectedValue = 1;
           answer = null;
         });
         break;
@@ -241,36 +246,113 @@ class _SurveyDetailPageState extends State<SurveyDetailPage> {
     return 'Next';
   }
 
+  Widget get headerTextWidget {
+    var text = widget.name;
+    if (isAtStart == false && isAtEnd == false) {
+      text = currentSectionData['name'].toString();
+    }
+
+    return AutoSizeText(
+      text,
+      style: GoogleFonts.urbanist(
+        fontWeight: FontWeight.w800,
+        fontSize: 20,
+        color: const Color(0xff4B3425),
+      ),
+      maxLines: 1,
+    );
+  }
+
+  int? selectedValue = 1;
+
+  Widget get questionTitleWidget {
+    final title = currentQuestionData['content'].toString();
+    final required = currentQuestionData['is_required'].toString() == 'true';
+
+    final highlightedWords = [
+      'relevant',
+      'activities',
+      'current development needs',
+      'before',
+      'after',
+      'facilitator',
+      'level of expertise',
+      'platform',
+      'learning materials',
+      'over-all experience',
+      'likely',
+      'likelihood',
+      'rate',
+      'expectations',
+      'most like',
+      'least like',
+      'learning goals',
+      'comments/suggestions',
+      'recommend',
+    ];
+
+    final parsedAsRegexString = '(${highlightedWords.join('|')})';
+
+    final currentState = context.read<SurveyBloc>().state;
+    if (currentState is LoadedSurveyState) {
+      if (currentState.isMeasuringTheBasics) {
+        return RegexTextHighlight(
+          text: title,
+          isRequired: false,
+          highlightRegex: RegExp(parsedAsRegexString),
+          nonHighlightStyle: GoogleFonts.urbanist(
+            fontWeight: FontWeight.w800,
+            fontSize: 30,
+            color: const Color(0xff4B3425),
+          ),
+        );
+      }
+    }
+
+    return SurveyQuestionHeaderWidget(
+      title,
+      required: required,
+    );
+  }
+
+  void _updateAnswer(dynamic data) {
+    setState(() {
+      answer = data;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      extendBodyBehindAppBar: true,
-      body: BlocBuilder<SurveyBloc, SurveyState>(
-        buildWhen: (previous, current) {
-          if (previous is! LoadedSurveyState && current is LoadedSurveyState) {
-            final survey = current.survey;
-            final sections = survey['sections'] as List;
+    return BlocBuilder<SurveyBloc, SurveyState>(
+      buildWhen: (previous, current) {
+        if (previous is! LoadedSurveyState && current is LoadedSurveyState) {
+          final survey = current.survey;
+          final sections = survey['sections'] as List;
 
-            var localTotalQuestionCount = 0;
-            var localTotalQuestionPerSection = <int>[];
-            for (var section in sections) {
-              final questions = section['questions'] as List;
-              localTotalQuestionCount += questions.length;
-              localTotalQuestionPerSection.add(questions.length);
-            }
-
-            setState(() {
-              totalSections = sections.length;
-              totalQuestions = localTotalQuestionCount;
-              totalQuestionsPerSection = localTotalQuestionPerSection;
-            });
+          var localTotalQuestionCount = 0;
+          var localTotalQuestionPerSection = <int>[];
+          for (var section in sections) {
+            final questions = section['questions'] as List;
+            localTotalQuestionCount += questions.length;
+            localTotalQuestionPerSection.add(questions.length);
           }
 
-          return true;
-        },
-        builder: (context, state) {
-          return SafeArea(
+          setState(() {
+            totalSections = sections.length;
+            totalQuestions = localTotalQuestionCount;
+            totalQuestionsPerSection = localTotalQuestionPerSection;
+          });
+        }
+
+        return true;
+      },
+      builder: (context, state) {
+        const backgroundColor = Color(0xffF7F4F2);
+
+        return Scaffold(
+          backgroundColor: backgroundColor,
+          extendBodyBehindAppBar: true,
+          body: SafeArea(
             child: Padding(
               padding: const EdgeInsets.all(19),
               child: Column(
@@ -280,95 +362,73 @@ class _SurveyDetailPageState extends State<SurveyDetailPage> {
                       GestureDetector(
                         onTap: _handleBackKey,
                         child: Container(
-                          padding: const EdgeInsets.all(8),
+                          padding: const EdgeInsets.all(14),
                           decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(10),
+                            shape: BoxShape.circle,
                             border: Border.all(
-                              color: const Color(0xffEBEBEB),
+                              color: const Color(0xff4B3425),
                               width: 1,
                             ),
                           ),
-                          child: const Icon(
-                            Icons.arrow_back_ios_new_rounded,
-                            size: 12,
+                          child: Image.asset(
+                            'assets/back_vector.png',
+                            height: 15,
                           ),
                         ),
                       ),
-                      const SizedBox(width: 8),
-                      Text(
-                        widget.name,
-                        style: const TextStyle(
-                          fontWeight: FontWeight.w600,
-                          fontSize: 14,
+                      const SizedBox(width: 12),
+                      Expanded(child: headerTextWidget),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 4,
+                        ),
+                        decoration: BoxDecoration(
+                          color: const Color(0xffE8DDD9),
+                          borderRadius: BorderRadius.circular(32),
+                        ),
+                        child: RichText(
+                          text: TextSpan(
+                            text: (answeredQuestionsCount + 1).toString(),
+                            style: GoogleFonts.urbanist(
+                              fontWeight: FontWeight.w900,
+                              color: const Color(0xff926247),
+                              fontSize: 14,
+                            ),
+                            children: <TextSpan>[
+                              TextSpan(
+                                text: ' OF $totalQuestions',
+                                // style: const TextStyle(
+                                //   fontWeight: FontWeight.w400,
+                                //   color: Color(0xff6F6F6F),
+                                // ),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 20),
                   Expanded(
                     child: Builder(builder: (context) {
-                      if (isAtStart) {
-                        return Column(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Image.asset(
-                              'assets/notification.png',
-                              height: 150,
-                              width: 150,
-                            ),
-                            const SizedBox(height: 16),
-                            const Text(
-                              'Just a friendly reminder\nbefore starting our survey!',
-                              style: TextStyle(
-                                fontWeight: FontWeight.w600,
-                                fontSize: 20,
-                              ),
-                              textAlign: TextAlign.center,
-                            ),
-                            const SizedBox(height: 16),
-                            const Text(
-                              '''Your opinions are valuable to us, and we'd love to hear what you have to say.''',
-                              style: TextStyle(
-                                fontWeight: FontWeight.w300,
-                                fontSize: 14,
-                                color: Color(0xff787878),
-                              ),
-                              textAlign: TextAlign.center,
-                            ),
-                          ],
-                        );
-                      } else if (isAtEnd) {
-                        return Column(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Image.asset(
-                              'assets/success.png',
-                              height: 150,
-                              width: 150,
-                            ),
-                            const SizedBox(height: 16),
-                            const Text(
-                              'We\'re all done!',
-                              style: TextStyle(
-                                fontWeight: FontWeight.w600,
-                                fontSize: 20,
-                              ),
-                              textAlign: TextAlign.center,
-                            ),
-                            const SizedBox(height: 16),
-                            const Text(
-                              '''Thank you for taking the time to complete our survey. ''',
-                              style: TextStyle(
-                                fontWeight: FontWeight.w300,
-                                fontSize: 14,
-                                color: Color(0xff787878),
-                              ),
-                              textAlign: TextAlign.center,
-                            ),
-                          ],
-                        );
+                      if (state is LoadedSurveyState) {
+                        if (state.isMeasuringTheBasics) {
+                          if (isAtStart) {
+                            throw UnimplementedError();
+                            return Column(
+                              children: [],
+                            );
+                          } else if (isAtEnd) {
+                            throw UnimplementedError();
+                            return const EndSurveyWidget();
+                          }
+                        } else {
+                          if (isAtStart) {
+                            return const StartWidgetSurvey();
+                          } else if (isAtEnd) {
+                            return const EndSurveyWidget();
+                          }
+                        }
                       }
 
                       return PageView(
@@ -382,115 +442,88 @@ class _SurveyDetailPageState extends State<SurveyDetailPage> {
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
                                 children: [
-                                  Text(
-                                    currentSectionData['name'].toString(),
-                                    style: const TextStyle(
-                                      fontWeight: FontWeight.w500,
-                                      fontSize: 16,
-                                    ),
-                                  ),
-                                  RichText(
-                                    text: TextSpan(
-                                      text: (answeredQuestionsCount + 1)
-                                          .toString(),
-                                      style: const TextStyle(
-                                        fontWeight: FontWeight.w400,
-                                        color: Colors.black,
-                                        fontSize: 14,
-                                      ),
-                                      children: <TextSpan>[
-                                        TextSpan(
-                                          text: ' of $totalQuestions',
-                                          style: const TextStyle(
-                                            fontWeight: FontWeight.w400,
-                                            color: Color(0xff6F6F6F),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  Container(
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 12,
-                                      vertical: 8,
-                                    ),
-                                    decoration: BoxDecoration(
-                                      border: Border.all(
-                                        color: const Color(0xffEBEBEB),
-                                      ),
-                                      borderRadius: BorderRadius.circular(16),
-                                    ),
-                                    child: Row(children: [
-                                      const Icon(
-                                        FontAwesomeIcons.solidClock,
-                                        color: Color(0xff818CF8),
-                                        size: 10,
-                                      ),
-                                      const SizedBox(width: 4),
-                                      CountdownTimer(
-                                        endTime: endTime,
-                                        widgetBuilder: (context, time) {
-                                          if (time == null) {
-                                            return const Center(
-                                              child: Text(
-                                                'Time is up, please complete the survey',
-                                                style: TextStyle(
-                                                  fontWeight: FontWeight.w500,
-                                                  fontSize: 10,
-                                                ),
-                                              ),
-                                            );
-                                          }
-                                          String value = '';
-                                          if (time.days != null) {
-                                            var days =
-                                                _getNumberAddZero(time.days!);
-                                            value = '$value$days days ';
-                                          }
-                                          final parsedHours = time.hours ?? 0;
-                                          if (parsedHours > 0) {
-                                            var hours =
-                                                _getNumberAddZero(parsedHours);
-                                            value = '$value$hours:';
-                                          }
-                                          var min =
-                                              _getNumberAddZero(time.min ?? 0);
-                                          value = '$value$min:';
-                                          var sec =
-                                              _getNumberAddZero(time.sec ?? 0);
-                                          value = '$value$sec';
-                                          return Text(
-                                            value,
-                                            style: const TextStyle(
-                                              fontWeight: FontWeight.w500,
-                                              fontSize: 10,
-                                            ),
-                                          );
-                                        },
-                                        onEnd: () {},
-                                      ),
-                                    ]),
-                                  )
+                                  // Container(
+                                  //   padding: const EdgeInsets.symmetric(
+                                  //     horizontal: 12,
+                                  //     vertical: 8,
+                                  //   ),
+                                  //   decoration: BoxDecoration(
+                                  //     border: Border.all(
+                                  //       color: const Color(0xffEBEBEB),
+                                  //     ),
+                                  //     borderRadius: BorderRadius.circular(16),
+                                  //   ),
+                                  //   child: Row(children: [
+                                  //     const Icon(
+                                  //       FontAwesomeIcons.solidClock,
+                                  //       color: Color(0xff818CF8),
+                                  //       size: 10,
+                                  //     ),
+                                  //     const SizedBox(width: 4),
+                                  //     CountdownTimer(
+                                  //       endTime: endTime,
+                                  //       widgetBuilder: (context, time) {
+                                  //         if (time == null) {
+                                  //           return const Center(
+                                  //             child: Text(
+                                  //               'Time is up',
+                                  //               style: TextStyle(
+                                  //                 fontWeight: FontWeight.w500,
+                                  //                 fontSize: 10,
+                                  //               ),
+                                  //             ),
+                                  //           );
+                                  //         }
+                                  //         String value = '';
+                                  //         if (time.days != null) {
+                                  //           var days =
+                                  //               _getNumberAddZero(time.days!);
+                                  //           value = '$value$days days ';
+                                  //         }
+                                  //         final parsedHours = time.hours ?? 0;
+                                  //         if (parsedHours > 0) {
+                                  //           var hours =
+                                  //               _getNumberAddZero(parsedHours);
+                                  //           value = '$value$hours:';
+                                  //         }
+                                  //         var min =
+                                  //             _getNumberAddZero(time.min ?? 0);
+                                  //         value = '$value$min:';
+                                  //         var sec =
+                                  //             _getNumberAddZero(time.sec ?? 0);
+                                  //         value = '$value$sec';
+                                  //         return Text(
+                                  //           value,
+                                  //           style: const TextStyle(
+                                  //             fontWeight: FontWeight.w500,
+                                  //             fontSize: 10,
+                                  //           ),
+                                  //         );
+                                  //       },
+                                  //       onEnd: () {},
+                                  //     ),
+                                  //   ]),
+                                  // )
                                 ],
                               ),
-                              const SizedBox(height: 20),
-                              ClipRRect(
-                                borderRadius: BorderRadius.circular(30),
-                                child: TweenAnimationBuilder<double>(
-                                  duration: const Duration(milliseconds: 250),
-                                  curve: Curves.easeInOut,
-                                  tween: Tween<double>(
-                                    begin: 0,
-                                    end: progressPercentage / 100,
-                                  ),
-                                  builder: (context, value, _) =>
-                                      LinearProgressIndicator(
-                                    value: value,
-                                    color: const Color(0xff4F46E5),
-                                    backgroundColor: const Color(0xffD9D9D9),
-                                  ),
-                                ),
-                              ),
+                              // const SizedBox(height: 20),
+                              // ClipRRect(
+                              //   borderRadius: BorderRadius.circular(30),
+                              //   child: TweenAnimationBuilder<double>(
+                              //     duration: const Duration(milliseconds: 250),
+                              //     curve: Curves.easeInOut,
+                              //     tween: Tween<double>(
+                              //       begin: 0,
+                              //       end: progressPercentage / 100,
+                              //     ),
+                              //     builder: (context, value, _) =>
+                              //         LinearProgressIndicator(
+                              //       value: value,
+                              //       color: const Color(0xff4F46E5),
+                              //       backgroundColor: const Color(0xffD9D9D9),
+                              //     ),
+                              //   ),
+                              // ),
                               const SizedBox(height: 20),
                               Expanded(
                                 child: PageView.builder(
@@ -498,845 +531,10 @@ class _SurveyDetailPageState extends State<SurveyDetailPage> {
                                   controller: subController,
                                   itemBuilder: (context, index) {
                                     return SurveyQuestionDetail(
-                                        currentQuestionData['content']
-                                            .toString(),
-                                        required:
-                                            currentQuestionData['is_required']
-                                                    .toString() ==
-                                                'true', child: Builder(
-                                      builder: (context) {
-                                        switch (currentQuestionData['type']) {
-                                          case 'radio':
-                                          case 'multiselect':
-                                            return Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: [
-                                                ListView.separated(
-                                                  shrinkWrap: true,
-                                                  itemBuilder:
-                                                      (context, index) {
-                                                    final type =
-                                                        currentQuestionData[
-                                                            'type'];
-
-                                                    final data =
-                                                        currentQuestionData[
-                                                            'options'][index];
-
-                                                    bool isSelected = false;
-
-                                                    if (type == 'radio') {
-                                                      isSelected =
-                                                          data == answer;
-                                                    } else {
-                                                      if (answer is List) {
-                                                        isSelected =
-                                                            (answer as List)
-                                                                .contains(data);
-                                                      }
-                                                    }
-
-                                                    return Container(
-                                                      padding: const EdgeInsets
-                                                          .symmetric(
-                                                        horizontal: 12,
-                                                      ),
-                                                      decoration: BoxDecoration(
-                                                        border: Border.all(
-                                                          color: isSelected
-                                                              ? const Color(
-                                                                  0xff4F46E5)
-                                                              : const Color(
-                                                                  0xffF4F4F4),
-                                                        ),
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(4),
-                                                      ),
-                                                      child: ListTile(
-                                                        onTap: () {
-                                                          if (currentQuestionData[
-                                                                  'type'] ==
-                                                              'radio') {
-                                                            setState(() {
-                                                              answer = data;
-                                                            });
-                                                          } else {
-                                                            var localAnswer =
-                                                                answer;
-                                                            if (localAnswer
-                                                                is! List) {
-                                                              localAnswer = [];
-                                                            }
-
-                                                            if (localAnswer
-                                                                .contains(
-                                                                    data)) {
-                                                              localAnswer
-                                                                  .remove(data);
-                                                            } else {
-                                                              final max = int.parse(
-                                                                  currentQuestionData[
-                                                                          'max']
-                                                                      .toString());
-
-                                                              if ((localAnswer
-                                                                          .length +
-                                                                      1) >
-                                                                  max) {
-                                                                // no-op
-                                                                return;
-                                                              }
-
-                                                              localAnswer
-                                                                  .add(data);
-                                                            }
-
-                                                            setState(() {
-                                                              answer =
-                                                                  localAnswer;
-                                                            });
-                                                          }
-                                                        },
-                                                        contentPadding:
-                                                            EdgeInsets.zero,
-                                                        title: Text(
-                                                          data,
-                                                          style: TextStyle(
-                                                            color: isSelected
-                                                                ? const Color(
-                                                                    0xff4F46E5)
-                                                                : Colors.black,
-                                                            fontWeight:
-                                                                isSelected
-                                                                    ? FontWeight
-                                                                        .bold
-                                                                    : null,
-                                                          ),
-                                                        ),
-                                                      ),
-                                                    );
-                                                  },
-                                                  separatorBuilder:
-                                                      (context, index) {
-                                                    return const SizedBox(
-                                                        height: 16);
-                                                  },
-                                                  itemCount:
-                                                      (currentQuestionData[
-                                                              'options'])
-                                                          .length,
-                                                ),
-                                                Builder(
-                                                  builder: (context) {
-                                                    final min =
-                                                        currentQuestionData[
-                                                                'min']
-                                                            .toString();
-                                                    if (min != 'null') {
-                                                      return Padding(
-                                                        padding:
-                                                            const EdgeInsets
-                                                                .only(top: 8),
-                                                        child: Text(
-                                                          'Minimum selection of $min choices.',
-                                                          style:
-                                                              const TextStyle(
-                                                            color: Colors.grey,
-                                                          ),
-                                                        ),
-                                                      );
-                                                    }
-
-                                                    return const SizedBox();
-                                                  },
-                                                ),
-                                                Builder(
-                                                  builder: (context) {
-                                                    final max =
-                                                        currentQuestionData[
-                                                                'max']
-                                                            .toString();
-                                                    if (max != 'null') {
-                                                      return Padding(
-                                                        padding:
-                                                            const EdgeInsets
-                                                                .only(top: 8),
-                                                        child: Text(
-                                                          'Maximum selection of $max choices.',
-                                                          style:
-                                                              const TextStyle(
-                                                            color: Colors.grey,
-                                                          ),
-                                                        ),
-                                                      );
-                                                    }
-
-                                                    return const SizedBox();
-                                                  },
-                                                ),
-                                                ErrorMessageWidget(
-                                                  error: error,
-                                                ),
-                                              ],
-                                            );
-
-                                          case 'time':
-                                            return Row(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.start,
-                                              children: [
-                                                OutlinedButton(
-                                                  onPressed: () {
-                                                    showTimePicker(
-                                                      context: context,
-                                                      initialTime:
-                                                          TimeOfDay.now(),
-                                                    );
-                                                  },
-                                                  child:
-                                                      const Text('Select time'),
-                                                ),
-                                              ],
-                                            );
-
-                                          case 'date':
-                                            return SfDateRangePicker();
-                                          case 'short-answer':
-                                          case 'long-answer':
-                                            final isLong =
-                                                currentQuestionData['type'] ==
-                                                    'long-answer';
-
-                                            return Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: [
-                                                Flexible(
-                                                  child: TextField(
-                                                    keyboardType: isLong
-                                                        ? TextInputType
-                                                            .multiline
-                                                        : TextInputType.text,
-                                                    onChanged: (value) {
-                                                      setState(() {
-                                                        answer = value;
-                                                      });
-                                                    },
-                                                    maxLength:
-                                                        currentQuestionData[
-                                                            'max'],
-                                                    maxLines:
-                                                        isLong ? 24 : null,
-                                                    decoration: InputDecoration(
-                                                      hintText:
-                                                          'Open-ended text response',
-                                                      hintStyle:
-                                                          const TextStyle(
-                                                        color:
-                                                            Color(0xffDBDBDB),
-                                                      ),
-                                                      focusColor: const Color(
-                                                          0xff4F46E5),
-                                                      focusedBorder:
-                                                          OutlineInputBorder(
-                                                        borderSide:
-                                                            const BorderSide(
-                                                          color:
-                                                              Color(0xff4F46E5),
-                                                        ),
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(10.0),
-                                                      ),
-                                                      enabledBorder:
-                                                          OutlineInputBorder(
-                                                        borderSide:
-                                                            const BorderSide(
-                                                          color:
-                                                              Color(0xffF4F4F4),
-                                                          width: 1,
-                                                        ),
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(10.0),
-                                                      ),
-                                                      border:
-                                                          OutlineInputBorder(
-                                                        borderSide:
-                                                            const BorderSide(
-                                                          color:
-                                                              Color(0xffF4F4F4),
-                                                          width: 1,
-                                                        ),
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(10.0),
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ),
-                                                ErrorMessageWidget(
-                                                  error: error,
-                                                ),
-                                              ],
-                                            );
-                                          case 'range':
-                                            return Column(
-                                              key: ValueKey(
-                                                  'q${currentQuestionData['id']}'),
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: [
-                                                Row(
-                                                  children: [
-                                                    Text(
-                                                      (currentQuestionData[
-                                                              'options'][0])
-                                                          .toString(),
-                                                      style: const TextStyle(
-                                                        fontSize: 12,
-                                                      ),
-                                                    ),
-                                                    Expanded(
-                                                      child: Center(
-                                                        child:
-                                                            RatingBar.builder(
-                                                          initialRating: 1,
-                                                          minRating: 1,
-                                                          direction:
-                                                              Axis.horizontal,
-                                                          allowHalfRating:
-                                                              false,
-                                                          itemCount: 10,
-                                                          itemBuilder:
-                                                              (context, _) =>
-                                                                  const Icon(
-                                                            Icons.favorite,
-                                                            color: Color(
-                                                                0xff4F46E5),
-                                                            size: 10,
-                                                          ),
-                                                          glowColor:
-                                                              Colors.white,
-                                                          itemSize: 23,
-                                                          onRatingUpdate:
-                                                              (rating) {
-                                                            setState(() {
-                                                              answer = rating;
-                                                            });
-                                                          },
-                                                        ),
-                                                      ),
-                                                    ),
-                                                    Text(
-                                                      (currentQuestionData[
-                                                              'options'][1])
-                                                          .toString(),
-                                                      style: const TextStyle(
-                                                        fontSize: 12,
-                                                      ),
-                                                    ),
-                                                  ],
-                                                ),
-                                                ErrorMessageWidget(
-                                                  error: error,
-                                                ),
-                                              ],
-                                            );
-
-                                          case 'likert':
-                                            var selectedIndex = 0;
-
-                                            return StatefulBuilder(
-                                                builder: (context, setState) {
-                                              return ListView.separated(
-                                                itemBuilder: (context, index) {
-                                                  var emoji = '';
-                                                  var title = '';
-                                                  final isSelected =
-                                                      selectedIndex == index;
-
-                                                  switch (index) {
-                                                    case 0:
-                                                      emoji = '🚀';
-                                                      title = 'Very Satisfied';
-                                                      break;
-                                                    case 1:
-                                                      emoji = '😊';
-                                                      title = 'Satisfied';
-                                                      break;
-                                                    case 2:
-                                                      emoji = '😐';
-                                                      title = 'Neutral';
-                                                      break;
-                                                    case 3:
-                                                      emoji = '😞';
-                                                      title = 'Unsatisfied';
-                                                      break;
-                                                    default:
-                                                  }
-
-                                                  return Container(
-                                                    padding: const EdgeInsets
-                                                        .symmetric(
-                                                      horizontal: 12,
-                                                    ),
-                                                    decoration: BoxDecoration(
-                                                      border: Border.all(
-                                                        color: isSelected
-                                                            ? const Color(
-                                                                0xff4F46E5)
-                                                            : const Color(
-                                                                0xffF4F4F4),
-                                                      ),
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              4),
-                                                    ),
-                                                    child: ListTile(
-                                                      onTap: () {
-                                                        setState(() {
-                                                          selectedIndex = index;
-                                                        });
-                                                      },
-                                                      contentPadding:
-                                                          EdgeInsets.zero,
-                                                      leading: Text(
-                                                        emoji,
-                                                        style: const TextStyle(
-                                                          color:
-                                                              Color(0xff818CF8),
-                                                          fontSize: 32,
-                                                        ),
-                                                      ),
-                                                      title: Text(
-                                                        title,
-                                                        style: TextStyle(
-                                                          color: isSelected
-                                                              ? const Color(
-                                                                  0xff4F46E5)
-                                                              : Colors.black,
-                                                          fontWeight: isSelected
-                                                              ? FontWeight.bold
-                                                              : null,
-                                                        ),
-                                                      ),
-                                                    ),
-                                                  );
-                                                },
-                                                separatorBuilder:
-                                                    (context, index) {
-                                                  return const SizedBox(
-                                                      height: 16);
-                                                },
-                                                itemCount: 4,
-                                              );
-                                            });
-
-                                          default:
-                                            break;
-                                        }
-
-                                        return const SizedBox();
-                                      },
-                                    ));
+                                      questionTitleWidget,
+                                      child: baseQuestionTypes,
+                                    );
                                   },
-                                  // children: [
-                                  //   SurveyQuestionDetail(
-                                  //     'What suggestions do you have to improve the event in the future?',
-                                  //     child: TextField(
-                                  //       keyboardType: TextInputType.multiline,
-                                  //       maxLines: 24,
-                                  //       decoration: InputDecoration(
-                                  //         hintText: 'Open-ended text response',
-                                  //         hintStyle: const TextStyle(
-                                  //           color: Color(0xffDBDBDB),
-                                  //         ),
-                                  //         focusColor: const Color(0xff4F46E5),
-                                  //         focusedBorder: OutlineInputBorder(
-                                  //           borderSide: const BorderSide(
-                                  //             color: Color(0xff4F46E5),
-                                  //           ),
-                                  //           borderRadius:
-                                  //               BorderRadius.circular(10.0),
-                                  //         ),
-                                  //         enabledBorder: OutlineInputBorder(
-                                  //           borderSide: const BorderSide(
-                                  //             color: Color(0xffF4F4F4),
-                                  //             width: 1,
-                                  //           ),
-                                  //           borderRadius:
-                                  //               BorderRadius.circular(10.0),
-                                  //         ),
-                                  //         border: OutlineInputBorder(
-                                  //           borderSide: const BorderSide(
-                                  //             color: Color(0xffF4F4F4),
-                                  //             width: 1,
-                                  //           ),
-                                  //           borderRadius:
-                                  //               BorderRadius.circular(10.0),
-                                  //         ),
-                                  //       ),
-                                  //     ),
-                                  //   ),
-                                  //   SurveyQuestionDetail(
-                                  //     'How satisfied are you with our services?',
-                                  //     child: ListView.separated(
-                                  //       itemBuilder: (context, index) {
-                                  //         var emoji = '';
-                                  //         var title = '';
-                                  //         final isSelected = index == 0;
-
-                                  //         switch (index) {
-                                  //           case 0:
-                                  //             emoji = '🚀';
-                                  //             title = 'Very Satisfied';
-                                  //             break;
-                                  //           case 1:
-                                  //             emoji = '😊';
-                                  //             title = 'Satisfied';
-                                  //             break;
-                                  //           case 2:
-                                  //             emoji = '😐';
-                                  //             title = 'Neutral';
-                                  //             break;
-                                  //           case 3:
-                                  //             emoji = '😞';
-                                  //             title = 'Unsatisfied';
-                                  //             break;
-                                  //           default:
-                                  //         }
-
-                                  //         return Container(
-                                  //           padding: const EdgeInsets.symmetric(
-                                  //             horizontal: 12,
-                                  //           ),
-                                  //           decoration: BoxDecoration(
-                                  //             border: Border.all(
-                                  //               color: isSelected
-                                  //                   ? const Color(0xff4F46E5)
-                                  //                   : const Color(0xffF4F4F4),
-                                  //             ),
-                                  //             borderRadius:
-                                  //                 BorderRadius.circular(4),
-                                  //           ),
-                                  //           child: ListTile(
-                                  //             contentPadding: EdgeInsets.zero,
-                                  //             leading: Text(
-                                  //               emoji,
-                                  //               style: const TextStyle(
-                                  //                 color: Color(0xff818CF8),
-                                  //                 fontSize: 32,
-                                  //               ),
-                                  //             ),
-                                  //             title: Text(
-                                  //               title,
-                                  //               style: TextStyle(
-                                  //                 color: isSelected
-                                  //                     ? const Color(0xff4F46E5)
-                                  //                     : Colors.black,
-                                  //                 fontWeight: isSelected
-                                  //                     ? FontWeight.bold
-                                  //                     : null,
-                                  //               ),
-                                  //             ),
-                                  //           ),
-                                  //         );
-                                  //       },
-                                  //       separatorBuilder: (context, index) {
-                                  //         return const SizedBox(height: 16);
-                                  //       },
-                                  //       itemCount: 4,
-                                  //     ),
-                                  //   ),
-                                  //   SurveyQuestionDetail(
-                                  //     'What were the main challenges you faced while starting the company?',
-                                  //     child: ListView.separated(
-                                  //       itemBuilder: (context, index) {
-                                  //         var title = '';
-                                  //         final isSelected =
-                                  //             index == 1 || index == 2;
-
-                                  //         switch (index) {
-                                  //           case 0:
-                                  //             title =
-                                  //                 'Difficulty finding the right team';
-                                  //             break;
-                                  //           case 1:
-                                  //             title = 'Lack of funding';
-                                  //             break;
-                                  //           case 2:
-                                  //             title =
-                                  //                 'Competition in the market';
-                                  //             break;
-                                  //           case 3:
-                                  //             title = 'Other (please specify)';
-                                  //             break;
-                                  //           default:
-                                  //         }
-
-                                  //         return Container(
-                                  //           padding: const EdgeInsets.symmetric(
-                                  //             horizontal: 12,
-                                  //           ),
-                                  //           decoration: BoxDecoration(
-                                  //             border: Border.all(
-                                  //               color: isSelected
-                                  //                   ? const Color(0xff4F46E5)
-                                  //                   : const Color(0xffF4F4F4),
-                                  //             ),
-                                  //             borderRadius:
-                                  //                 BorderRadius.circular(4),
-                                  //           ),
-                                  //           child: ListTile(
-                                  //             contentPadding: EdgeInsets.zero,
-                                  //             title: Text(
-                                  //               title,
-                                  //               style: TextStyle(
-                                  //                 color: isSelected
-                                  //                     ? const Color(0xff4F46E5)
-                                  //                     : Colors.black,
-                                  //                 fontWeight: isSelected
-                                  //                     ? FontWeight.bold
-                                  //                     : null,
-                                  //               ),
-                                  //             ),
-                                  //             trailing: Checkbox(
-                                  //               checkColor: Colors.white,
-                                  //               activeColor:
-                                  //                   const Color(0xff4F46E5),
-                                  //               //     MaterialStateProperty.resolveWith(
-                                  //               //   (_) => const Color(0xff4F46E5),
-                                  //               // ),
-                                  //               value: isSelected,
-                                  //               shape: const CircleBorder(),
-                                  //               onChanged: (bool? value) {},
-                                  //             ),
-                                  //           ),
-                                  //         );
-                                  //       },
-                                  //       separatorBuilder: (context, index) {
-                                  //         return const SizedBox(height: 16);
-                                  //       },
-                                  //       itemCount: 4,
-                                  //     ),
-                                  //   ),
-                                  //   // SurveyQuestionDetail(
-                                  //   //   'Can you discuss your marketing strategies and how you attract new customers?',
-                                  //   //   shouldWrapChildInExpanded: false,
-                                  //   //   child: SizedBox(
-                                  //   //     width: double.infinity,
-                                  //   //     height: 25,
-                                  //   //     child: DropdownButtonHideUnderline(
-                                  //   //       child: DropdownButton2(
-                                  //   //         hint: Text(
-                                  //   //           'Please choose an option',
-                                  //   //           style: TextStyle(
-                                  //   //             fontSize: 14,
-                                  //   //             color:
-                                  //   //                 Theme.of(context).hintColor,
-                                  //   //           ),
-                                  //   //         ),
-                                  //   //         items: items
-                                  //   //             .map((item) =>
-                                  //   //                 DropdownMenuItem<String>(
-                                  //   //                   value: item,
-                                  //   //                   child: Text(
-                                  //   //                     item,
-                                  //   //                     style: const TextStyle(
-                                  //   //                       fontSize: 14,
-                                  //   //                     ),
-                                  //   //                   ),
-                                  //   //                 ))
-                                  //   //             .toList(),
-                                  //   //         value: selectedValue,
-                                  //   //         onChanged: (value) {
-                                  //   //           setState(() {
-                                  //   //             selectedValue = value as String;
-                                  //   //           });
-                                  //   //         },
-                                  //   //         buttonStyleData:
-                                  //   //             const ButtonStyleData(
-                                  //   //           height: 40,
-                                  //   //           width: 140,
-                                  //   //         ),
-                                  //   //         menuItemStyleData:
-                                  //   //             const MenuItemStyleData(
-                                  //   //           height: 40,
-                                  //   //         ),
-                                  //   //       ),
-                                  //   //     ),
-                                  //   //   ),
-                                  //   // ),
-                                  //   // SurveyQuestionDetail(
-                                  //   //   'What is the average workday start and end time for your team?',
-                                  //   //   child: Column(
-                                  //   //     crossAxisAlignment:
-                                  //   //         CrossAxisAlignment.start,
-                                  //   //     children: [
-                                  //   //       const Text(
-                                  //   //         'Start time:',
-                                  //   //         style: TextStyle(
-                                  //   //           fontWeight: FontWeight.w500,
-                                  //   //           fontSize: 14,
-                                  //   //         ),
-                                  //   //       ),
-                                  //   //       const SizedBox(height: 10),
-                                  //   //       Container(
-                                  //   //         padding: const EdgeInsets.all(17),
-                                  //   //         decoration: BoxDecoration(
-                                  //   //           border: Border.all(
-                                  //   //             color: const Color(0xffF4F4F4),
-                                  //   //             width: 1,
-                                  //   //           ),
-                                  //   //           borderRadius:
-                                  //   //               BorderRadius.circular(4),
-                                  //   //         ),
-                                  //   //         child: Row(
-                                  //   //           children: [
-                                  //   //             const Icon(
-                                  //   //               FontAwesomeIcons.clock,
-                                  //   //               size: 16,
-                                  //   //             ),
-                                  //   //             const SizedBox(width: 8),
-                                  //   //             const Text(
-                                  //   //               '08:00 AM',
-                                  //   //               style: TextStyle(
-                                  //   //                 fontWeight: FontWeight.w500,
-                                  //   //                 fontSize: 14,
-                                  //   //               ),
-                                  //   //             ),
-                                  //   //             const Spacer(),
-                                  //   //             const Icon(
-                                  //   //               CupertinoIcons.arrow_down,
-                                  //   //             ),
-                                  //   //           ],
-                                  //   //         ),
-                                  //   //       ),
-                                  //   //       const SizedBox(height: 20),
-                                  //   //       const Text(
-                                  //   //         'End time:',
-                                  //   //         style: TextStyle(
-                                  //   //           fontWeight: FontWeight.w500,
-                                  //   //           fontSize: 14,
-                                  //   //         ),
-                                  //   //       ),
-                                  //   //       const SizedBox(height: 10),
-                                  //   //       Container(
-                                  //   //         padding: const EdgeInsets.all(17),
-                                  //   //         decoration: BoxDecoration(
-                                  //   //           border: Border.all(
-                                  //   //             color: const Color(0xffF4F4F4),
-                                  //   //             width: 1,
-                                  //   //           ),
-                                  //   //           borderRadius:
-                                  //   //               BorderRadius.circular(4),
-                                  //   //         ),
-                                  //   //         child: Row(
-                                  //   //           children: [
-                                  //   //             const Icon(
-                                  //   //               FontAwesomeIcons.clock,
-                                  //   //               size: 16,
-                                  //   //             ),
-                                  //   //             const SizedBox(width: 8),
-                                  //   //             const Text(
-                                  //   //               '05:00 PM',
-                                  //   //               style: TextStyle(
-                                  //   //                 fontWeight: FontWeight.w500,
-                                  //   //                 fontSize: 14,
-                                  //   //               ),
-                                  //   //             ),
-                                  //   //             const Spacer(),
-                                  //   //             const Icon(
-                                  //   //               CupertinoIcons.arrow_down,
-                                  //   //             ),
-                                  //   //           ],
-                                  //   //         ),
-                                  //   //       ),
-                                  //   //     ],
-                                  //   //   ),
-                                  //   // ),
-                                  //   // SurveyQuestionDetail(
-                                  //   //   'How do you differentiate yourself from your competitors?',
-                                  //   //   child: SizedBox.expand(
-                                  //   //     child: DottedBorder(
-                                  //   //       borderType: BorderType.RRect,
-                                  //   //       radius: const Radius.circular(4),
-                                  //   //       padding: const EdgeInsets.all(6),
-                                  //   //       strokeWidth: 1,
-                                  //   //       dashPattern: const <double>[
-                                  //   //         8,
-                                  //   //       ],
-                                  //   //       strokeCap: StrokeCap.round,
-                                  //   //       color: const Color(0xff4F46E5),
-                                  //   //       child: Center(
-                                  //   //         child: Column(
-                                  //   //           crossAxisAlignment:
-                                  //   //               CrossAxisAlignment.center,
-                                  //   //           mainAxisAlignment:
-                                  //   //               MainAxisAlignment.center,
-                                  //   //           children: [
-                                  //   //             Container(
-                                  //   //               padding: const EdgeInsets
-                                  //   //                   .symmetric(
-                                  //   //                 vertical: 16,
-                                  //   //               ),
-                                  //   //               width: 200,
-                                  //   //               decoration: BoxDecoration(
-                                  //   //                 color:
-                                  //   //                     const Color(0xffEEEEFF),
-                                  //   //                 border: Border.all(
-                                  //   //                   color: const Color(
-                                  //   //                       0xff6366F1),
-                                  //   //                   width: 2,
-                                  //   //                 ),
-                                  //   //                 borderRadius:
-                                  //   //                     BorderRadius.circular(
-                                  //   //                         4),
-                                  //   //               ),
-                                  //   //               child: const Center(
-                                  //   //                 child: Text(
-                                  //   //                   'Upload',
-                                  //   //                   style: TextStyle(
-                                  //   //                     fontWeight:
-                                  //   //                         FontWeight.w500,
-                                  //   //                     fontSize: 16,
-                                  //   //                     color:
-                                  //   //                         Color(0xff4F46E5),
-                                  //   //                   ),
-                                  //   //                 ),
-                                  //   //               ),
-                                  //   //             ),
-                                  //   //             const SizedBox(height: 8),
-                                  //   //             const Text(
-                                  //   //               'Attach files up to 5 MB',
-                                  //   //               style: TextStyle(
-                                  //   //                 fontSize: 12,
-                                  //   //                 color: Color(
-                                  //   //                   0xffCBD5E1,
-                                  //   //                 ),
-                                  //   //               ),
-                                  //   //             ),
-                                  //   //             const Text(
-                                  //   //               'Only .pdf, .jpeg, .jpg, .png files are supported.',
-                                  //   //               style: TextStyle(
-                                  //   //                 fontSize: 12,
-                                  //   //                 color: Color(
-                                  //   //                   0xffCBD5E1,
-                                  //   //                 ),
-                                  //   //               ),
-                                  //   //             ),
-                                  //   //           ],
-                                  //   //         ),
-                                  //   //       ),
-                                  //   //     ),
-                                  //   //   ),
-                                  //   // ),
-                                  // ],
                                 ),
                               ),
                             ],
@@ -1361,6 +559,41 @@ class _SurveyDetailPageState extends State<SurveyDetailPage> {
                       context.read<SurveyBloc>().add(LoadSurvey(id: widget.id));
                     }
 
+                    if (state is LoadedSurveyState) {
+                      return GestureDetector(
+                        onTap: onTap,
+                        child: Container(
+                          width: double.infinity,
+                          decoration: BoxDecoration(
+                            color: const Color(0xff4F3422),
+                            borderRadius: BorderRadius.circular(31),
+                          ),
+                          padding: const EdgeInsets.symmetric(vertical: 20),
+                          child: Center(
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Text(
+                                  'Continue',
+                                  style: GoogleFonts.urbanist(
+                                    color: Colors.white,
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.w800,
+                                  ),
+                                ),
+                                const SizedBox(width: 8),
+                                Image.asset(
+                                  'assets/right_arrow_vector.png',
+                                  width: 25,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      );
+                    }
+
                     return GestureDetector(
                       onTap: onTap,
                       child: Container(
@@ -1383,13 +616,699 @@ class _SurveyDetailPageState extends State<SurveyDetailPage> {
                       ),
                     );
                   }),
-                  const SizedBox(height: 20),
                 ],
               ),
             ),
-          );
-        },
-      ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget get measuringTheBasicsQuestionTypes {
+    return Builder(
+      key: ValueKey(currentQuestion),
+      builder: (context) {
+        switch (currentQuestionData['type']) {
+          case 'radio':
+            final questions = List<String>.from(currentQuestionData['options']);
+
+            if (questions.length == 3) {
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  Center(
+                    child: Text(
+                      questions[selectedValue!].toString(),
+                      style: GoogleFonts.urbanist(
+                        fontSize: 64,
+                        fontWeight: FontWeight.w800,
+                        color: const Color(0xff4F3422),
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                  IntrinsicWidth(
+                    child: Container(
+                      clipBehavior: Clip.none,
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(128),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: questions.mapIndexed(
+                          (index, element) {
+                            final isSelected = answer == element;
+
+                            return GestureDetector(
+                              onTap: () {
+                                setState(() {
+                                  selectedValue = index;
+                                  answer = questions[index];
+                                });
+                              },
+                              child: AnimatedContainer(
+                                margin: EdgeInsets.only(
+                                  right:
+                                      (index != questions.length - 1) ? 8 : 0,
+                                ),
+                                clipBehavior: Clip.none,
+                                duration: const Duration(milliseconds: 150),
+                                padding: const EdgeInsets.all(30),
+                                decoration: BoxDecoration(
+                                  boxShadow: isSelected
+                                      ? [
+                                          BoxShadow(
+                                            color: const Color(0xffFE814B)
+                                                .withOpacity(0.25),
+                                            spreadRadius: 4,
+                                          )
+                                        ]
+                                      : null,
+                                  color: isSelected
+                                      ? const Color(0xffED7E1C)
+                                      : Colors.white,
+                                  borderRadius: BorderRadius.circular(128),
+                                ),
+                                child: Text(
+                                  element,
+                                  style: GoogleFonts.urbanist(
+                                    fontWeight: FontWeight.w800,
+                                    fontSize: 24,
+                                    color: isSelected
+                                        ? Colors.white
+                                        : const Color(0xff4F3422),
+                                  ),
+                                ),
+                              ),
+                            );
+                          },
+                        ).toList(),
+                      ),
+                    ),
+                  ),
+                ],
+              );
+            }
+
+            return Row(
+              children: [
+                ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 150),
+                  child: Column(
+                    children: questions.mapIndexed(
+                      (idx, e) {
+                        final currentSelected =
+                            (questions.length - 1) - selectedValue! + 1;
+                        return Flexible(
+                          child: Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text(
+                              e,
+                              style: GoogleFonts.urbanist(
+                                fontWeight: FontWeight.w800,
+                                fontSize: 18,
+                                color: currentSelected == idx
+                                    ? const Color(0xff4B3425)
+                                    : const Color(0xffACA9A5),
+                              ),
+                              maxLines: 2,
+                              textAlign: TextAlign.left,
+                            ),
+                          ),
+                        );
+                      },
+                    ).toList(),
+                  ),
+                ),
+                const SizedBox(width: 25),
+                Expanded(
+                  flex: 2,
+                  child: Center(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(),
+                      child: SfSliderTheme(
+                        data: SfSliderThemeData(
+                          activeTrackColor: const Color(0xffFE631B),
+                          inactiveTrackColor: const Color(0xffE8DDD9),
+                          activeTrackHeight: 16,
+                          inactiveTrackHeight: 16,
+                          thumbRadius: 24,
+                          thumbColor: const Color(0xffFE814B),
+                          overlayColor:
+                              const Color(0xffFE814B).withOpacity(0.25),
+                          overlayRadius: 32,
+                        ),
+                        child: SfSlider.vertical(
+                          max: questions.length,
+                          min: 1,
+                          value: selectedValue,
+                          showTicks: false,
+                          showLabels: false,
+                          enableTooltip: false,
+                          interval: 1,
+                          isInversed: false,
+                          thumbIcon: Padding(
+                            padding: const EdgeInsets.all(12),
+                            child: Image.asset('assets/thumb.png'),
+                          ),
+                          onChanged: (value) {
+                            final valueParsed = ((value as double)).round();
+
+                            final properInversedData =
+                                (questions.length - 1) - valueParsed + 1;
+
+                            final answerData = questions[properInversedData];
+
+                            setState(() {
+                              selectedValue = valueParsed;
+                            });
+
+                            _updateAnswer(answerData);
+                          },
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 25),
+                Column(
+                  children: ['overjoyed', 'happy', 'sad', 'depressed']
+                      .map(
+                        (e) => Expanded(
+                          child: Center(
+                            child: Image.asset(
+                              'assets/mood_$e.png',
+                              height: 50,
+                            ),
+                          ),
+                        ),
+                      )
+                      .toList(),
+                ),
+              ],
+            );
+
+          case 'range':
+            final questions = List<String>.from(currentQuestionData['options'])
+                .reversed
+                .toList();
+            final max = currentQuestionData['max'];
+            final min = currentQuestionData['min'];
+
+            return Row(
+              children: [
+                ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 120),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: questions.mapIndexed(
+                      (idx, e) {
+                        return AutoSizeText(
+                          e,
+                          style: GoogleFonts.urbanist(
+                            fontWeight: FontWeight.w800,
+                            fontSize: 24,
+                            color: (idx == 0 && answer > 5) ||
+                                    (idx == 1 && answer <= 5)
+                                ? const Color(0xff4B3425)
+                                : const Color(0xffACA9A5),
+                          ),
+                          maxLines: 2,
+                          textAlign: TextAlign.left,
+                        );
+                      },
+                    ).toList(),
+                  ),
+                ),
+                const SizedBox(width: 25),
+                Expanded(
+                  flex: 2,
+                  child: Center(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(),
+                      child: SfSliderTheme(
+                        data: SfSliderThemeData(
+                          activeTrackColor: const Color(0xffFE631B),
+                          inactiveTrackColor: const Color(0xffE8DDD9),
+                          activeTrackHeight: 16,
+                          inactiveTrackHeight: 16,
+                          thumbRadius: 24,
+                          thumbColor: const Color(0xffFE814B),
+                          overlayColor:
+                              const Color(0xffFE814B).withOpacity(0.25),
+                          overlayRadius: 32,
+                          tickOffset: const Offset(10, 0),
+                          tickSize: const Size(8, 2),
+                          activeTickColor: const Color(0xff4B3425),
+                          inactiveTickColor:
+                              const Color(0xff8F8985).withOpacity(0.5),
+                        ),
+                        child: SfSlider.vertical(
+                          min: min,
+                          max: max,
+                          value: answer,
+                          showTicks: true,
+                          showLabels: false,
+                          enableTooltip: false,
+                          interval: 1,
+                          isInversed: false,
+                          thumbIcon: Padding(
+                            padding: const EdgeInsets.all(12),
+                            child: Image.asset('assets/thumb.png'),
+                          ),
+                          onChanged: (value) {
+                            final valueParsed = ((value as double)).round();
+
+                            _updateAnswer(valueParsed);
+                          },
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 25),
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: ['overjoyed', 'depressed']
+                      .map(
+                        (e) => Image.asset(
+                          'assets/mood_$e.png',
+                          height: 50,
+                        ),
+                      )
+                      .toList(),
+                ),
+              ],
+            );
+
+          case 'short-answer':
+          case 'text':
+          case 'long-answer':
+            final isLong = currentQuestionData['type'] == 'long-answer';
+
+            return Builder(builder: (context) {
+              final borderRadius = BorderRadius.circular(isLong ? 24 : 96);
+              final border = OutlineInputBorder(
+                borderRadius: borderRadius,
+                borderSide: const BorderSide(
+                  color: Color(0xff4F3422),
+                  width: 3,
+                ),
+              );
+
+              return Column(
+                children: [
+                  Container(
+                    margin: const EdgeInsets.symmetric(horizontal: 12),
+                    decoration: BoxDecoration(
+                      borderRadius: borderRadius,
+                      boxShadow: [
+                        BoxShadow(
+                          color: const Color(0xff4B3425).withOpacity(0.25),
+                          spreadRadius: 6,
+                        )
+                      ],
+                    ),
+                    child: TextField(
+                      textInputAction: isLong
+                          ? TextInputAction.newline
+                          : TextInputAction.done,
+                      onChanged: (value) {
+                        setState(() {
+                          answer = value;
+                        });
+                      },
+                      decoration: InputDecoration(
+                        contentPadding: isLong
+                            ? const EdgeInsets.symmetric(
+                                horizontal: 32, vertical: 32)
+                            : const EdgeInsets.symmetric(
+                                horizontal: 32, vertical: 24),
+                        filled: true,
+                        fillColor: Colors.white,
+                        border: border,
+                        enabledBorder: border,
+                        focusedBorder: border,
+                        hintText: 'Type your answer here...',
+                      ),
+                      keyboardType:
+                          isLong ? TextInputType.multiline : TextInputType.text,
+                      maxLines: isLong ? 18 : null,
+                      cursorColor: const Color(0xffA18FFF),
+                    ),
+                  ),
+                ],
+              );
+            });
+        }
+
+        return const SizedBox();
+      },
+    );
+  }
+
+  Widget get baseQuestionTypes {
+    final currentState = context.read<SurveyBloc>().state;
+    if (currentState is LoadedSurveyState) {
+      if (currentState.isMeasuringTheBasics) {
+        return measuringTheBasicsQuestionTypes;
+      }
+    }
+
+    return Builder(
+      builder: (context) {
+        switch (currentQuestionData['type']) {
+          case 'radio':
+          case 'multiselect':
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                ListView.separated(
+                  shrinkWrap: true,
+                  itemBuilder: (context, index) {
+                    final type = currentQuestionData['type'];
+
+                    final data = currentQuestionData['options'][index];
+
+                    bool isSelected = false;
+
+                    if (type == 'radio') {
+                      isSelected = data == answer;
+                    } else {
+                      if (answer is List) {
+                        isSelected = (answer as List).contains(data);
+                      }
+                    }
+
+                    return Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                      ),
+                      decoration: BoxDecoration(
+                        border: Border.all(
+                          color: isSelected
+                              ? const Color(0xff4F46E5)
+                              : const Color(0xffF4F4F4),
+                        ),
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      child: ListTile(
+                        onTap: () {
+                          if (currentQuestionData['type'] == 'radio') {
+                            setState(() {
+                              answer = data;
+                            });
+                          } else {
+                            var localAnswer = answer;
+                            if (localAnswer is! List) {
+                              localAnswer = [];
+                            }
+
+                            if (localAnswer.contains(data)) {
+                              localAnswer.remove(data);
+                            } else {
+                              final max = int.parse(
+                                  currentQuestionData['max'].toString());
+
+                              if ((localAnswer.length + 1) > max) {
+                                // no-op
+                                return;
+                              }
+
+                              localAnswer.add(data);
+                            }
+
+                            setState(() {
+                              answer = localAnswer;
+                            });
+                          }
+                        },
+                        contentPadding: EdgeInsets.zero,
+                        title: Text(
+                          data,
+                          style: TextStyle(
+                            color: isSelected
+                                ? const Color(0xff4F46E5)
+                                : Colors.black,
+                            fontWeight: isSelected ? FontWeight.bold : null,
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                  separatorBuilder: (context, index) {
+                    return const SizedBox(height: 16);
+                  },
+                  itemCount: (currentQuestionData['options']).length,
+                ),
+                Builder(
+                  builder: (context) {
+                    final min = currentQuestionData['min'].toString();
+                    if (min != 'null') {
+                      return Padding(
+                        padding: const EdgeInsets.only(top: 8),
+                        child: Text(
+                          'Minimum selection of $min choices.',
+                          style: const TextStyle(
+                            color: Colors.grey,
+                          ),
+                        ),
+                      );
+                    }
+
+                    return const SizedBox();
+                  },
+                ),
+                Builder(
+                  builder: (context) {
+                    final max = currentQuestionData['max'].toString();
+                    if (max != 'null') {
+                      return Padding(
+                        padding: const EdgeInsets.only(top: 8),
+                        child: Text(
+                          'Maximum selection of $max choices.',
+                          style: const TextStyle(
+                            color: Colors.grey,
+                          ),
+                        ),
+                      );
+                    }
+
+                    return const SizedBox();
+                  },
+                ),
+                ErrorMessageWidget(
+                  error: error,
+                ),
+              ],
+            );
+
+          case 'time':
+            return Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                OutlinedButton(
+                  onPressed: () {
+                    showTimePicker(
+                      context: context,
+                      initialTime: TimeOfDay.now(),
+                    );
+                  },
+                  child: const Text('Select time'),
+                ),
+              ],
+            );
+
+          case 'date':
+            return SfDateRangePicker();
+          case 'short-answer':
+          case 'long-answer':
+            final isLong = currentQuestionData['type'] == 'long-answer';
+
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Flexible(
+                  child: TextField(
+                    keyboardType:
+                        isLong ? TextInputType.multiline : TextInputType.text,
+                    onChanged: (value) {
+                      setState(() {
+                        answer = value;
+                      });
+                    },
+                    maxLength: currentQuestionData['max'],
+                    maxLines: isLong ? 24 : null,
+                    decoration: InputDecoration(
+                      hintText: 'Open-ended text response',
+                      hintStyle: const TextStyle(
+                        color: Color(0xffDBDBDB),
+                      ),
+                      focusColor: const Color(0xff4F46E5),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: const BorderSide(
+                          color: Color(0xff4F46E5),
+                        ),
+                        borderRadius: BorderRadius.circular(10.0),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: const BorderSide(
+                          color: Color(0xffF4F4F4),
+                          width: 1,
+                        ),
+                        borderRadius: BorderRadius.circular(10.0),
+                      ),
+                      border: OutlineInputBorder(
+                        borderSide: const BorderSide(
+                          color: Color(0xffF4F4F4),
+                          width: 1,
+                        ),
+                        borderRadius: BorderRadius.circular(10.0),
+                      ),
+                    ),
+                  ),
+                ),
+                ErrorMessageWidget(
+                  error: error,
+                ),
+              ],
+            );
+          case 'range':
+            return Column(
+              key: ValueKey('q${currentQuestionData['id']}'),
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Text(
+                      (currentQuestionData['options'][0]).toString(),
+                      style: const TextStyle(
+                        fontSize: 12,
+                      ),
+                    ),
+                    Expanded(
+                      child: Center(
+                        child: RatingBar.builder(
+                          initialRating: 1,
+                          minRating: 1,
+                          direction: Axis.horizontal,
+                          allowHalfRating: false,
+                          itemCount: 10,
+                          itemBuilder: (context, _) => const Icon(
+                            Icons.favorite,
+                            color: Color(0xff4F46E5),
+                            size: 10,
+                          ),
+                          glowColor: Colors.white,
+                          itemSize: 23,
+                          onRatingUpdate: (rating) {
+                            setState(() {
+                              answer = rating;
+                            });
+                          },
+                        ),
+                      ),
+                    ),
+                    Text(
+                      (currentQuestionData['options'][1]).toString(),
+                      style: const TextStyle(
+                        fontSize: 12,
+                      ),
+                    ),
+                  ],
+                ),
+                ErrorMessageWidget(
+                  error: error,
+                ),
+              ],
+            );
+
+          case 'likert':
+            var selectedIndex = 0;
+
+            return StatefulBuilder(builder: (context, setState) {
+              return ListView.separated(
+                itemBuilder: (context, index) {
+                  var emoji = '';
+                  var title = '';
+                  final isSelected = selectedIndex == index;
+
+                  switch (index) {
+                    case 0:
+                      emoji = '🚀';
+                      title = 'Very Satisfied';
+                      break;
+                    case 1:
+                      emoji = '😊';
+                      title = 'Satisfied';
+                      break;
+                    case 2:
+                      emoji = '😐';
+                      title = 'Neutral';
+                      break;
+                    case 3:
+                      emoji = '😞';
+                      title = 'Unsatisfied';
+                      break;
+                    default:
+                  }
+
+                  return Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                    ),
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                        color: isSelected
+                            ? const Color(0xff4F46E5)
+                            : const Color(0xffF4F4F4),
+                      ),
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                    child: ListTile(
+                      onTap: () {
+                        setState(() {
+                          selectedIndex = index;
+                        });
+                      },
+                      contentPadding: EdgeInsets.zero,
+                      leading: Text(
+                        emoji,
+                        style: const TextStyle(
+                          color: Color(0xff818CF8),
+                          fontSize: 32,
+                        ),
+                      ),
+                      title: Text(
+                        title,
+                        style: TextStyle(
+                          color: isSelected
+                              ? const Color(0xff4F46E5)
+                              : Colors.black,
+                          fontWeight: isSelected ? FontWeight.bold : null,
+                        ),
+                      ),
+                    ),
+                  );
+                },
+                separatorBuilder: (context, index) {
+                  return const SizedBox(height: 16);
+                },
+                itemCount: 4,
+              );
+            });
+
+          default:
+            break;
+        }
+
+        return const SizedBox();
+      },
     );
   }
 
@@ -1398,6 +1317,86 @@ class _SurveyDetailPageState extends State<SurveyDetailPage> {
       return "0$number";
     }
     return number.toString();
+  }
+}
+
+class StartWidgetSurvey extends StatelessWidget {
+  const StartWidgetSurvey({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Image.asset(
+          'assets/notification.png',
+          height: 150,
+          width: 150,
+        ),
+        const SizedBox(height: 16),
+        const Text(
+          'Just a friendly reminder\nbefore starting our survey!',
+          style: TextStyle(
+            fontWeight: FontWeight.w600,
+            fontSize: 20,
+          ),
+          textAlign: TextAlign.center,
+        ),
+        const SizedBox(height: 16),
+        const Text(
+          '''Your opinions are valuable to us, and we'd love to hear what you have to say.''',
+          style: TextStyle(
+            fontWeight: FontWeight.w300,
+            fontSize: 14,
+            color: Color(0xff787878),
+          ),
+          textAlign: TextAlign.center,
+        ),
+      ],
+    );
+  }
+}
+
+class EndSurveyWidget extends StatelessWidget {
+  const EndSurveyWidget({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Image.asset(
+          'assets/success.png',
+          height: 150,
+          width: 150,
+        ),
+        const SizedBox(height: 16),
+        const Text(
+          'We\'re all done!',
+          style: TextStyle(
+            fontWeight: FontWeight.w600,
+            fontSize: 20,
+          ),
+          textAlign: TextAlign.center,
+        ),
+        const SizedBox(height: 16),
+        const Text(
+          '''Thank you for taking the time to complete our survey. ''',
+          style: TextStyle(
+            fontWeight: FontWeight.w300,
+            fontSize: 14,
+            color: Color(0xff787878),
+          ),
+          textAlign: TextAlign.center,
+        ),
+      ],
+    );
   }
 }
 
@@ -1433,17 +1432,15 @@ class ErrorMessageWidget extends StatelessWidget {
 }
 
 class SurveyQuestionDetail extends StatelessWidget {
-  final String title;
+  final Widget title;
   final Widget child;
   final bool shouldWrapChildInExpanded;
-  final bool required;
 
   const SurveyQuestionDetail(
     this.title, {
     super.key,
     required this.child,
     this.shouldWrapChildInExpanded = true,
-    required this.required,
   });
 
   @override
@@ -1451,11 +1448,8 @@ class SurveyQuestionDetail extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        SurveyQuestionHeaderWidget(
-          title,
-          required: required,
-        ),
-        const SizedBox(height: 12),
+        Center(child: title),
+        const SizedBox(height: 24),
         if (shouldWrapChildInExpanded)
           Expanded(
             child: child,
@@ -1499,5 +1493,93 @@ class SurveyQuestionHeaderWidget extends StatelessWidget {
         ],
       ),
     );
+  }
+}
+
+class RegexTextHighlight extends StatelessWidget {
+  const RegexTextHighlight({
+    super.key,
+    required this.text,
+    required this.highlightRegex,
+    required this.isRequired,
+    required this.nonHighlightStyle,
+  });
+
+  final String text;
+  final RegExp highlightRegex;
+  final TextStyle nonHighlightStyle;
+  final bool isRequired;
+
+  @override
+  Widget build(BuildContext context) {
+    if (text.isEmpty) {
+      return Text(
+        "",
+        style: nonHighlightStyle,
+      );
+    }
+
+    List<InlineSpan> spans = [];
+    int start = 0;
+    while (true) {
+      final String? highlight =
+          highlightRegex.stringMatch(text.substring(start));
+
+      if (highlight == null) {
+        spans.add(_normalSpan(text.substring(start)));
+        break;
+      }
+
+      final int indexOfHighlight = text.indexOf(highlight, start);
+
+      if (indexOfHighlight == start) {
+        spans.add(_highlightSpan(highlight));
+        start += highlight.length;
+      } else {
+        // normal + highlight
+        spans.add(_normalSpan(text.substring(start, indexOfHighlight)));
+        spans.add(_highlightSpan(highlight));
+        start = indexOfHighlight + highlight.length;
+      }
+    }
+
+    if (isRequired) {
+      spans.add(const TextSpan(
+        text: ' *',
+        style: TextStyle(
+          color: Colors.red,
+          fontWeight: FontWeight.bold,
+        ),
+      ));
+    }
+
+    return RichText(
+      text: TextSpan(
+        style: nonHighlightStyle,
+        children: spans,
+      ),
+      textAlign: TextAlign.center,
+      // minFontSize: 5,
+    );
+  }
+
+  InlineSpan _highlightSpan(String content) {
+    return WidgetSpan(
+      alignment: PlaceholderAlignment.baseline,
+      baseline: TextBaseline.alphabetic,
+      child: GradientText(
+        content,
+        colors: const [
+          Color(0xff4F46E5),
+          Color(0xff696AEF),
+          Color(0xff818CF8),
+        ],
+        style: nonHighlightStyle,
+      ),
+    );
+  }
+
+  TextSpan _normalSpan(String content) {
+    return TextSpan(text: content);
   }
 }
