@@ -34,7 +34,7 @@ class SurveyListGridItem extends StatelessWidget {
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(4),
                     child: Image.network(
-                      'https://unsplash.com/photos/Y5bvRlcCx8k/download?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Y29tcGFueXxlbnwwfHx8fDE2OTk5Mjg1ODd8MA&force=true&w=640',
+                      data['photo'],
                       fit: BoxFit.cover,
                     ),
                   ),
@@ -113,37 +113,73 @@ class SurveyListGridItem extends StatelessWidget {
           ),
           const SizedBox(height: 10),
           const Spacer(),
-          Container(
-            padding: const EdgeInsets.symmetric(vertical: 8),
-            width: double.infinity,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(6),
-              boxShadow: [
-                BoxShadow(
-                  color: const Color(0xff544BE8).withOpacity(0.33),
-                  blurRadius: 13,
-                  offset: const Offset(0, 4),
-                )
-              ],
-              gradient: const LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [
-                  Color(0xff7C74FF),
-                  Color(0xff544BE8),
+          Builder(builder: (context) {
+            if (data['is_open'] != true) {
+              return Container(
+                padding: const EdgeInsets.symmetric(vertical: 8),
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(6),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.red.withOpacity(0.33),
+                      blurRadius: 13,
+                      offset: const Offset(0, 4),
+                    )
+                  ],
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      Colors.red.shade400,
+                      Colors.red.shade800,
+                    ],
+                  ),
+                ),
+                child: const Center(
+                  child: Text(
+                    'Closed',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 12,
+                    ),
+                  ),
+                ),
+              );
+            }
+
+            return Container(
+              padding: const EdgeInsets.symmetric(vertical: 8),
+              width: double.infinity,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(6),
+                boxShadow: [
+                  BoxShadow(
+                    color: const Color(0xff544BE8).withOpacity(0.33),
+                    blurRadius: 13,
+                    offset: const Offset(0, 4),
+                  )
                 ],
-              ),
-            ),
-            child: const Center(
-              child: Text(
-                'Start Survey',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 12,
+                gradient: const LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Color(0xff7C74FF),
+                    Color(0xff544BE8),
+                  ],
                 ),
               ),
-            ),
-          )
+              child: const Center(
+                child: Text(
+                  'Start Survey',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 12,
+                  ),
+                ),
+              ),
+            );
+          })
         ],
       ),
     );

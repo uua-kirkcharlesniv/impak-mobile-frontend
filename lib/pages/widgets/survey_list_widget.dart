@@ -55,7 +55,7 @@ class SurveyListWidget extends StatelessWidget {
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(4),
                 child: Image.network(
-                  'https://unsplash.com/photos/nC6CyrVBtkU/download?ixid=M3wxMjA3fDB8MXxzZWFyY2h8M3x8Y29tcGFueXxlbnwwfHx8fDE2OTk5Mjg1ODd8MA&force=true&w=640',
+                  data['photo'],
                   fit: BoxFit.cover,
                   height: 130,
                   width: double.infinity,
