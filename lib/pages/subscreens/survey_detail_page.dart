@@ -5,6 +5,7 @@ import 'dart:convert';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:chopper/chopper.dart';
 import 'package:collection/collection.dart';
+import 'package:floating_bubbles/floating_bubbles.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
@@ -284,8 +285,8 @@ class _SurveyDetailPageState extends State<SurveyDetailPage> {
       'likelihood',
       'rate',
       'expectations',
-      'most like',
-      'least like',
+      'MOST LIKE',
+      'LEAST LIKE',
       'learning goals',
       'comments/suggestions',
       'recommend',
@@ -347,278 +348,373 @@ class _SurveyDetailPageState extends State<SurveyDetailPage> {
         return true;
       },
       builder: (context, state) {
-        const backgroundColor = Color(0xffF7F4F2);
+        var backgroundColor = const Color(0xffF7F4F2);
+        var loadBubbles = false;
+
+        if (state is LoadedSurveyState) {
+          if (state.isMeasuringTheBasics) {
+            if (isAtStart || isAtEnd) {
+              backgroundColor = const Color(0xff9BB168);
+              loadBubbles = true;
+            } else {
+              backgroundColor = const Color(0xffF7F4F2);
+              loadBubbles = false;
+            }
+          } else {
+            backgroundColor = Colors.white;
+          }
+        }
 
         return Scaffold(
-          backgroundColor: backgroundColor,
           extendBodyBehindAppBar: true,
-          body: SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.all(19),
-              child: Column(
-                children: [
-                  Row(
-                    children: [
-                      GestureDetector(
-                        onTap: _handleBackKey,
-                        child: Container(
-                          padding: const EdgeInsets.all(14),
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            border: Border.all(
-                              color: const Color(0xff4B3425),
-                              width: 1,
-                            ),
-                          ),
-                          child: Image.asset(
-                            'assets/back_vector.png',
-                            height: 15,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(child: headerTextWidget),
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 12,
-                          vertical: 4,
-                        ),
-                        decoration: BoxDecoration(
-                          color: const Color(0xffE8DDD9),
-                          borderRadius: BorderRadius.circular(32),
-                        ),
-                        child: RichText(
-                          text: TextSpan(
-                            text: (answeredQuestionsCount + 1).toString(),
-                            style: GoogleFonts.urbanist(
-                              fontWeight: FontWeight.w900,
-                              color: const Color(0xff926247),
-                              fontSize: 14,
-                            ),
-                            children: <TextSpan>[
-                              TextSpan(
-                                text: ' OF $totalQuestions',
-                                // style: const TextStyle(
-                                //   fontWeight: FontWeight.w400,
-                                //   color: Color(0xff6F6F6F),
-                                // ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
+          body: Stack(
+            children: [
+              AnimatedContainer(
+                duration: const Duration(milliseconds: 150),
+                color: backgroundColor,
+              ),
+              if (loadBubbles)
+                Positioned.fill(
+                  child: FloatingBubbles.alwaysRepeating(
+                    noOfBubbles: 10,
+                    speed: BubbleSpeed.slow,
+                    colorsOfBubbles: [
+                      const Color(0xff7D944D),
                     ],
+                    sizeFactor: 0.49,
                   ),
-                  Expanded(
-                    child: Builder(builder: (context) {
-                      if (state is LoadedSurveyState) {
-                        if (state.isMeasuringTheBasics) {
-                          if (isAtStart) {
-                            throw UnimplementedError();
-                            return Column(
-                              children: [],
-                            );
-                          } else if (isAtEnd) {
-                            throw UnimplementedError();
-                            return const EndSurveyWidget();
-                          }
-                        } else {
-                          if (isAtStart) {
-                            return const StartWidgetSurvey();
-                          } else if (isAtEnd) {
-                            return const EndSurveyWidget();
-                          }
-                        }
-                      }
-
-                      return PageView(
-                        physics: const NeverScrollableScrollPhysics(),
-                        controller: controller,
+                ),
+              SafeArea(
+                child: Padding(
+                  padding: const EdgeInsets.all(19),
+                  child: Column(
+                    children: [
+                      Row(
                         children: [
-                          Column(
-                            children: [
-                              Row(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  // Container(
-                                  //   padding: const EdgeInsets.symmetric(
-                                  //     horizontal: 12,
-                                  //     vertical: 8,
-                                  //   ),
-                                  //   decoration: BoxDecoration(
-                                  //     border: Border.all(
-                                  //       color: const Color(0xffEBEBEB),
-                                  //     ),
-                                  //     borderRadius: BorderRadius.circular(16),
-                                  //   ),
-                                  //   child: Row(children: [
-                                  //     const Icon(
-                                  //       FontAwesomeIcons.solidClock,
-                                  //       color: Color(0xff818CF8),
-                                  //       size: 10,
-                                  //     ),
-                                  //     const SizedBox(width: 4),
-                                  //     CountdownTimer(
-                                  //       endTime: endTime,
-                                  //       widgetBuilder: (context, time) {
-                                  //         if (time == null) {
-                                  //           return const Center(
-                                  //             child: Text(
-                                  //               'Time is up',
-                                  //               style: TextStyle(
-                                  //                 fontWeight: FontWeight.w500,
-                                  //                 fontSize: 10,
-                                  //               ),
-                                  //             ),
-                                  //           );
-                                  //         }
-                                  //         String value = '';
-                                  //         if (time.days != null) {
-                                  //           var days =
-                                  //               _getNumberAddZero(time.days!);
-                                  //           value = '$value$days days ';
-                                  //         }
-                                  //         final parsedHours = time.hours ?? 0;
-                                  //         if (parsedHours > 0) {
-                                  //           var hours =
-                                  //               _getNumberAddZero(parsedHours);
-                                  //           value = '$value$hours:';
-                                  //         }
-                                  //         var min =
-                                  //             _getNumberAddZero(time.min ?? 0);
-                                  //         value = '$value$min:';
-                                  //         var sec =
-                                  //             _getNumberAddZero(time.sec ?? 0);
-                                  //         value = '$value$sec';
-                                  //         return Text(
-                                  //           value,
-                                  //           style: const TextStyle(
-                                  //             fontWeight: FontWeight.w500,
-                                  //             fontSize: 10,
-                                  //           ),
-                                  //         );
-                                  //       },
-                                  //       onEnd: () {},
-                                  //     ),
-                                  //   ]),
-                                  // )
+                          GestureDetector(
+                            onTap: _handleBackKey,
+                            child: Container(
+                              padding: const EdgeInsets.all(14),
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                border: Border.all(
+                                  color: const Color(0xff4B3425),
+                                  width: 1,
+                                ),
+                              ),
+                              child: Image.asset(
+                                'assets/back_vector.png',
+                                height: 15,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(child: headerTextWidget),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 4,
+                            ),
+                            decoration: BoxDecoration(
+                              color: const Color(0xffE8DDD9),
+                              borderRadius: BorderRadius.circular(32),
+                            ),
+                            child: RichText(
+                              text: TextSpan(
+                                text: (answeredQuestionsCount + 1).toString(),
+                                style: GoogleFonts.urbanist(
+                                  fontWeight: FontWeight.w900,
+                                  color: const Color(0xff926247),
+                                  fontSize: 14,
+                                ),
+                                children: <TextSpan>[
+                                  TextSpan(
+                                    text: ' OF $totalQuestions',
+                                    // style: const TextStyle(
+                                    //   fontWeight: FontWeight.w400,
+                                    //   color: Color(0xff6F6F6F),
+                                    // ),
+                                  ),
                                 ],
                               ),
-                              // const SizedBox(height: 20),
-                              // ClipRRect(
-                              //   borderRadius: BorderRadius.circular(30),
-                              //   child: TweenAnimationBuilder<double>(
-                              //     duration: const Duration(milliseconds: 250),
-                              //     curve: Curves.easeInOut,
-                              //     tween: Tween<double>(
-                              //       begin: 0,
-                              //       end: progressPercentage / 100,
-                              //     ),
-                              //     builder: (context, value, _) =>
-                              //         LinearProgressIndicator(
-                              //       value: value,
-                              //       color: const Color(0xff4F46E5),
-                              //       backgroundColor: const Color(0xffD9D9D9),
-                              //     ),
-                              //   ),
-                              // ),
-                              const SizedBox(height: 20),
-                              Expanded(
-                                child: PageView.builder(
-                                  physics: const NeverScrollableScrollPhysics(),
-                                  controller: subController,
-                                  itemBuilder: (context, index) {
-                                    return SurveyQuestionDetail(
-                                      questionTitleWidget,
-                                      child: baseQuestionTypes,
-                                    );
-                                  },
-                                ),
-                              ),
-                            ],
+                            ),
                           ),
                         ],
-                      );
-                    }),
-                  ),
-                  const SizedBox(height: 20),
-                  Builder(builder: (context) {
-                    var text = _buildPageTextButton();
-                    var color = const Color(0xff6366F1);
-                    var textColor = Colors.white;
-                    var onTap = _handleNextKey;
-
-                    if (state is! LoadedSurveyState) {
-                      text = 'Please wait while we load your survey...';
-                      color = Colors.grey.shade300;
-                      textColor = Colors.black;
-                      onTap = () async {};
-
-                      context.read<SurveyBloc>().add(LoadSurvey(id: widget.id));
-                    }
-
-                    if (state is LoadedSurveyState) {
-                      return GestureDetector(
-                        onTap: onTap,
-                        child: Container(
-                          width: double.infinity,
-                          decoration: BoxDecoration(
-                            color: const Color(0xff4F3422),
-                            borderRadius: BorderRadius.circular(31),
-                          ),
-                          padding: const EdgeInsets.symmetric(vertical: 20),
-                          child: Center(
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                Text(
-                                  'Continue',
-                                  style: GoogleFonts.urbanist(
-                                    color: Colors.white,
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.w800,
-                                  ),
-                                ),
-                                const SizedBox(width: 8),
-                                Image.asset(
-                                  'assets/right_arrow_vector.png',
-                                  width: 25,
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      );
-                    }
-
-                    return GestureDetector(
-                      onTap: onTap,
-                      child: Container(
-                        width: double.infinity,
-                        decoration: BoxDecoration(
-                          color: color,
-                          borderRadius: BorderRadius.circular(31),
-                        ),
-                        padding: const EdgeInsets.symmetric(vertical: 20),
-                        child: Center(
-                          child: Text(
-                            text,
-                            style: TextStyle(
-                              color: textColor,
-                              fontSize: 16,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                        ),
                       ),
-                    );
-                  }),
-                ],
+                      Expanded(
+                        child: Builder(builder: (context) {
+                          if (state is LoadedSurveyState) {
+                            if (state.isMeasuringTheBasics) {
+                              if (isAtStart) {
+                                return Column(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceAround,
+                                  children: [
+                                    Text(
+                                      'Instructions to the\nparticipants',
+                                      style: GoogleFonts.urbanist(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.w800,
+                                        fontSize: 38,
+                                      ),
+                                      textAlign: TextAlign.center,
+                                    ),
+                                    Text(
+                                      'Thank you for actively\nparticipating in our workshop.',
+                                      style: GoogleFonts.urbanist(
+                                        fontWeight: FontWeight.w600,
+                                        color: Colors.white,
+                                        fontSize: 24,
+                                      ),
+                                      textAlign: TextAlign.center,
+                                    ),
+                                    Text(
+                                      '''
+Feedback is a gift! We'd like to request a
+few minutes of your time to evaluate the
+workshop and give us this gift.
+
+Rest assured that your responses will be treated
+with confidentiality and data will only be
+used for us to check on how we can
+improve our session.
+
+
+Looking forward to your responses,
+Thank you and keep safe!
+                                      ''',
+                                      style: GoogleFonts.urbanist(
+                                        color: Colors.white,
+                                        fontSize: 18,
+                                      ),
+                                      textAlign: TextAlign.center,
+                                    )
+                                  ],
+                                );
+                              } else if (isAtEnd) {
+                                return Center(
+                                  child: Text(
+                                    'Thank you for\nanswering the\nsurvey!',
+                                    style: GoogleFonts.urbanist(
+                                      fontWeight: FontWeight.w800,
+                                      color: Colors.white,
+                                      fontSize: 36,
+                                    ),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                );
+                              }
+                            } else {
+                              if (isAtStart) {
+                                return const StartWidgetSurvey();
+                              } else if (isAtEnd) {
+                                return const EndSurveyWidget();
+                              }
+                            }
+                          }
+
+                          return PageView(
+                            physics: const NeverScrollableScrollPhysics(),
+                            controller: controller,
+                            children: [
+                              Column(
+                                children: [
+                                  Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      // Container(
+                                      //   padding: const EdgeInsets.symmetric(
+                                      //     horizontal: 12,
+                                      //     vertical: 8,
+                                      //   ),
+                                      //   decoration: BoxDecoration(
+                                      //     border: Border.all(
+                                      //       color: const Color(0xffEBEBEB),
+                                      //     ),
+                                      //     borderRadius: BorderRadius.circular(16),
+                                      //   ),
+                                      //   child: Row(children: [
+                                      //     const Icon(
+                                      //       FontAwesomeIcons.solidClock,
+                                      //       color: Color(0xff818CF8),
+                                      //       size: 10,
+                                      //     ),
+                                      //     const SizedBox(width: 4),
+                                      //     CountdownTimer(
+                                      //       endTime: endTime,
+                                      //       widgetBuilder: (context, time) {
+                                      //         if (time == null) {
+                                      //           return const Center(
+                                      //             child: Text(
+                                      //               'Time is up',
+                                      //               style: TextStyle(
+                                      //                 fontWeight: FontWeight.w500,
+                                      //                 fontSize: 10,
+                                      //               ),
+                                      //             ),
+                                      //           );
+                                      //         }
+                                      //         String value = '';
+                                      //         if (time.days != null) {
+                                      //           var days =
+                                      //               _getNumberAddZero(time.days!);
+                                      //           value = '$value$days days ';
+                                      //         }
+                                      //         final parsedHours = time.hours ?? 0;
+                                      //         if (parsedHours > 0) {
+                                      //           var hours =
+                                      //               _getNumberAddZero(parsedHours);
+                                      //           value = '$value$hours:';
+                                      //         }
+                                      //         var min =
+                                      //             _getNumberAddZero(time.min ?? 0);
+                                      //         value = '$value$min:';
+                                      //         var sec =
+                                      //             _getNumberAddZero(time.sec ?? 0);
+                                      //         value = '$value$sec';
+                                      //         return Text(
+                                      //           value,
+                                      //           style: const TextStyle(
+                                      //             fontWeight: FontWeight.w500,
+                                      //             fontSize: 10,
+                                      //           ),
+                                      //         );
+                                      //       },
+                                      //       onEnd: () {},
+                                      //     ),
+                                      //   ]),
+                                      // )
+                                    ],
+                                  ),
+                                  // const SizedBox(height: 20),
+                                  // ClipRRect(
+                                  //   borderRadius: BorderRadius.circular(30),
+                                  //   child: TweenAnimationBuilder<double>(
+                                  //     duration: const Duration(milliseconds: 250),
+                                  //     curve: Curves.easeInOut,
+                                  //     tween: Tween<double>(
+                                  //       begin: 0,
+                                  //       end: progressPercentage / 100,
+                                  //     ),
+                                  //     builder: (context, value, _) =>
+                                  //         LinearProgressIndicator(
+                                  //       value: value,
+                                  //       color: const Color(0xff4F46E5),
+                                  //       backgroundColor: const Color(0xffD9D9D9),
+                                  //     ),
+                                  //   ),
+                                  // ),
+                                  const SizedBox(height: 20),
+                                  Expanded(
+                                    child: PageView.builder(
+                                      physics:
+                                          const NeverScrollableScrollPhysics(),
+                                      controller: subController,
+                                      itemBuilder: (context, index) {
+                                        return SurveyQuestionDetail(
+                                          questionTitleWidget,
+                                          child: baseQuestionTypes,
+                                        );
+                                      },
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          );
+                        }),
+                      ),
+                      const SizedBox(height: 20),
+                      Builder(builder: (context) {
+                        var text = _buildPageTextButton();
+                        var color = const Color(0xff6366F1);
+                        var textColor = Colors.white;
+                        var onTap = _handleNextKey;
+
+                        if (state is! LoadedSurveyState) {
+                          text = 'Please wait while we load your survey...';
+                          color = Colors.grey.shade300;
+                          textColor = Colors.black;
+                          onTap = () async {};
+
+                          context
+                              .read<SurveyBloc>()
+                              .add(LoadSurvey(id: widget.id));
+                        }
+
+                        if (state is LoadedSurveyState) {
+                          return GestureDetector(
+                            onTap: onTap,
+                            child: Container(
+                              width: double.infinity,
+                              decoration: BoxDecoration(
+                                border: state.isMeasuringTheBasics && isAtEnd
+                                    ? Border.all(
+                                        color: Colors.white,
+                                      )
+                                    : null,
+                                color: state.isMeasuringTheBasics && isAtEnd
+                                    ? Colors.transparent
+                                    : const Color(0xff4F3422),
+                                borderRadius: BorderRadius.circular(31),
+                              ),
+                              padding: const EdgeInsets.symmetric(vertical: 20),
+                              child: Center(
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      'Continue',
+                                      style: GoogleFonts.urbanist(
+                                        color: Colors.white,
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.w800,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Image.asset(
+                                      'assets/right_arrow_vector.png',
+                                      width: 25,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          );
+                        }
+
+                        return GestureDetector(
+                          onTap: onTap,
+                          child: Container(
+                            width: double.infinity,
+                            decoration: BoxDecoration(
+                              color: color,
+                              borderRadius: BorderRadius.circular(31),
+                            ),
+                            padding: const EdgeInsets.symmetric(vertical: 20),
+                            child: Center(
+                              child: Text(
+                                text,
+                                style: TextStyle(
+                                  color: textColor,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ),
+                          ),
+                        );
+                      }),
+                    ],
+                  ),
+                ),
               ),
-            ),
+            ],
           ),
         );
       },
