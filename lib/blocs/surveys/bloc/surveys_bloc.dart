@@ -22,9 +22,9 @@ class SurveysBloc extends Bloc<SurveysEvent, SurveysState> {
           .getService<ApiService>()
           .availableSurveys();
 
-      await Future.delayed(
-        const Duration(seconds: 3),
-      );
+      // await Future.delayed(
+      //   const Duration(seconds: 3),
+      // );
 
       emit(
         LoadedSurveysState(
