@@ -32,9 +32,7 @@ class _SignInState extends State<SignIn> {
 
   Future<void> _validateUrl() async {
     try {
-      final url = kDebugMode
-          ? 'http://${_controller.text}.impak.test'
-          : 'https://${_controller.text}.impak.app';
+      final url = 'https://${_controller.text}.impak.app';
       final uri = Uri.parse(url);
 
       final client = http.Client();

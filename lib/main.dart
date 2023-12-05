@@ -27,7 +27,7 @@ void main() async {
   locator.registerSingleton<ChopperClient>(
     ChopperClient(
       baseUrl: Uri.parse(
-        !kDebugMode ? 'https://impak.app/api' : 'http://acme.impak.test/api',
+        'https://impak.app/api',
       ),
       services: [
         ApiService.create(),
