@@ -78,7 +78,7 @@ class SurveyListGridItem extends StatelessWidget {
               ],
             ),
           ),
-          const SizedBox(height: 10),
+          const SizedBox(height: 5),
           Row(
             children: [
               const Icon(
@@ -96,7 +96,7 @@ class SurveyListGridItem extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(height: 10),
+          const SizedBox(height: 5),
           AutoSizeText(
             data['name'],
             style: const TextStyle(
@@ -105,7 +105,7 @@ class SurveyListGridItem extends StatelessWidget {
             ),
             maxLines: 2,
           ),
-          const SizedBox(height: 10),
+          const SizedBox(height: 5),
           Text(
             data['rationale_description'],
             style: const TextStyle(
@@ -113,10 +113,9 @@ class SurveyListGridItem extends StatelessWidget {
               fontSize: 10,
               color: Color(0xff696969),
             ),
-            maxLines: 4,
+            maxLines: 3,
             overflow: TextOverflow.ellipsis,
           ),
-          const SizedBox(height: 10),
           const Spacer(),
           Builder(builder: (context) {
             if (data['is_open'] != true) {
