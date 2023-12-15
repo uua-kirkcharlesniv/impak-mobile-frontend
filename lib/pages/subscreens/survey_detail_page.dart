@@ -520,7 +520,7 @@ Thank you and keep safe!
                             children: [
                               Column(
                                 children: [
-                                  Row(
+                                  const Row(
                                     crossAxisAlignment:
                                         CrossAxisAlignment.center,
                                     mainAxisAlignment:
@@ -1406,13 +1406,6 @@ Thank you and keep safe!
         return const SizedBox();
       },
     );
-  }
-
-  String _getNumberAddZero(int number) {
-    if (number < 10) {
-      return "0$number";
-    }
-    return number.toString();
   }
 }
 

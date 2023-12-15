@@ -1,7 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:chopper/chopper.dart';
 import 'package:equatable/equatable.dart';
-import 'package:flutter/foundation.dart';
 import 'package:get_it/get_it.dart';
 import 'package:impak_mobile/chopper/api_service.dart';
 
