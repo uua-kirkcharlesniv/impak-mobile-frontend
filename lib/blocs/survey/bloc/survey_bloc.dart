@@ -18,18 +18,10 @@ class SurveyBloc extends Bloc<SurveyEvent, SurveyState> {
           .getService<ApiService>()
           .getSurveyDetails(event.id.toString());
 
-      var isMeasuringTheBasics = false;
-      final frameworkId = survey.body['data']['framework_id'];
-      if (kDebugMode) {
-        isMeasuringTheBasics = frameworkId == 32 || frameworkId == 31;
-      } else {
-        isMeasuringTheBasics = frameworkId == 1 || frameworkId == 2;
-      }
-
       emit(
         LoadedSurveyState(
           survey: survey.body['data'],
-          isMeasuringTheBasics: isMeasuringTheBasics,
+          isMeasuringTheBasics: true,
         ),
       );
     });
