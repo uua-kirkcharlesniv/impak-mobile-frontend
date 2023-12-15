@@ -13,6 +13,7 @@ import 'package:get_it/get_it.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:impak_mobile/blocs/survey/bloc/survey_bloc.dart';
 import 'package:impak_mobile/chopper/api_service.dart';
+import 'package:intl/intl.dart';
 import 'package:simple_gradient_text/simple_gradient_text.dart';
 import 'package:syncfusion_flutter_core/theme.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
@@ -1060,6 +1061,161 @@ Thank you and keep safe!
                 ],
               );
             });
+          case 'multiselect':
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                ListView.separated(
+                  shrinkWrap: true,
+                  itemBuilder: (context, index) {
+                    final type = currentQuestionData['type'];
+
+                    final data = currentQuestionData['options'][index];
+
+                    bool isSelected = false;
+
+                    if (type == 'radio') {
+                      isSelected = data == answer;
+                    } else {
+                      if (answer is List) {
+                        isSelected = (answer as List).contains(data);
+                      }
+                    }
+
+                    return Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                      ),
+                      decoration: BoxDecoration(
+                        border: Border.all(
+                          color: isSelected
+                              ? const Color(0xff4F46E5)
+                              : const Color(0xffF4F4F4),
+                        ),
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      child: ListTile(
+                        onTap: () {
+                          if (currentQuestionData['type'] == 'radio') {
+                            setState(() {
+                              answer = data;
+                            });
+                          } else {
+                            var localAnswer = answer;
+                            if (localAnswer is! List) {
+                              localAnswer = [];
+                            }
+
+                            if (localAnswer.contains(data)) {
+                              localAnswer.remove(data);
+                            } else {
+                              final max = int.parse(
+                                  currentQuestionData['max'].toString());
+
+                              if ((localAnswer.length + 1) > max) {
+                                // no-op
+                                return;
+                              }
+
+                              localAnswer.add(data);
+                            }
+
+                            setState(() {
+                              answer = localAnswer;
+                            });
+                          }
+                        },
+                        contentPadding: EdgeInsets.zero,
+                        title: Text(
+                          data,
+                          style: TextStyle(
+                            color: isSelected
+                                ? const Color(0xff4F46E5)
+                                : Colors.black,
+                            fontWeight: isSelected ? FontWeight.bold : null,
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                  separatorBuilder: (context, index) {
+                    return const SizedBox(height: 16);
+                  },
+                  itemCount: (currentQuestionData['options']).length,
+                ),
+                Builder(
+                  builder: (context) {
+                    final min = currentQuestionData['min'].toString();
+                    if (min != 'null') {
+                      return Padding(
+                        padding: const EdgeInsets.only(top: 8),
+                        child: Text(
+                          'Minimum selection of $min choices.',
+                          style: const TextStyle(
+                            color: Colors.grey,
+                          ),
+                        ),
+                      );
+                    }
+
+                    return const SizedBox();
+                  },
+                ),
+                Builder(
+                  builder: (context) {
+                    final max = currentQuestionData['max'].toString();
+                    if (max != 'null') {
+                      return Padding(
+                        padding: const EdgeInsets.only(top: 8),
+                        child: Text(
+                          'Maximum selection of $max choices.',
+                          style: const TextStyle(
+                            color: Colors.grey,
+                          ),
+                        ),
+                      );
+                    }
+
+                    return const SizedBox();
+                  },
+                ),
+                ErrorMessageWidget(
+                  error: error,
+                ),
+              ],
+            );
+
+          case 'time':
+            return Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                OutlinedButton(
+                  onPressed: () async {
+                    final tod = await showTimePicker(
+                      context: context,
+                      initialTime: TimeOfDay.now(),
+                    );
+                    if (tod != null && context.mounted) {
+                      String formattedTime = "${tod.hour}:${tod.minute}";
+
+                      _updateAnswer(formattedTime);
+                    }
+                  },
+                  child: const Text('Select time'),
+                ),
+              ],
+            );
+
+          case 'date':
+            return SfDateRangePicker(
+              onSelectionChanged: (date) {
+                final value = date.value;
+                if (value is DateTime) {
+                  _updateAnswer(DateFormat('y-MM-dd').format(value));
+                }
+              },
+            );
         }
 
         return const SizedBox();
