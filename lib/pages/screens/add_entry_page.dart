@@ -83,170 +83,171 @@ class _AddEntryPageState extends State<AddEntryPage> {
             ),
           ),
           Positioned.fill(
-            child: SizedBox.expand(
-              child: Padding(
-                padding: const EdgeInsets.all(29),
-                child: Column(
-                  children: [
-                    const SizedBox(height: 64),
-                    Container(
-                      width: double.infinity,
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 9,
-                        vertical: 18,
-                      ),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(
-                          color: Colors.white,
+            child: SafeArea(
+              child: SizedBox.expand(
+                child: Padding(
+                  padding: const EdgeInsets.all(24),
+                  child: Column(
+                    children: [
+                      const SizedBox(height: 12),
+                      Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 9,
+                          vertical: 18,
                         ),
-                      ),
-                      child: const Column(
-                        children: [
-                          Text(
-                            'How are you feeling?',
-                            style: TextStyle(
-                              fontWeight: FontWeight.w600,
-                              fontSize: 18,
-                              color: Colors.white,
-                            ),
-                          ),
-                          SizedBox(height: 12),
-                          Text(
-                            'Users typically log their moods at regular intervals, such as daily or weekly, using a variety of emotional descriptors.',
-                            style: TextStyle(
-                              fontWeight: FontWeight.w400,
-                              color: Colors.white,
-                              fontSize: 14,
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 15),
-                    Expanded(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: [
-                          getFaceDescriptor,
-                          SizedBox(
-                            child: RatingBar.builder(
-                              initialRating: selected.toDouble(),
-                              minRating: 1,
-                              direction: Axis.horizontal,
-                              allowHalfRating: false,
-                              itemCount: 5,
-                              itemBuilder: (context, _) => Icon(
-                                Icons.favorite,
-                                color: Colors.white.withOpacity(0.85),
-                                size: 10,
-                              ),
-                              glowColor: Colors.white,
-                              glow: false,
-                              itemSize: 32,
-                              updateOnDrag: true,
-                              onRatingUpdate: (rating) {
-                                setState(() {
-                                  selected = rating.toInt();
-                                });
-                              },
-                            ),
-                          ),
-                          RichText(
-                            text: TextSpan(
-                                text: '$getMoodDescriptorStart ',
-                                style: GoogleFonts.urbanist(
-                                  color: Colors.white,
-                                  fontSize: 24,
-                                ),
-                                children: [
-                                  TextSpan(
-                                    text: getMoodDescriptorBold,
-                                    style: const TextStyle(
-                                      fontWeight: FontWeight.w900,
-                                    ),
-                                  ),
-                                ]),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Builder(builder: (context) {
-                      final borderRadius = BorderRadius.circular(24);
-                      final border = OutlineInputBorder(
-                        borderRadius: borderRadius,
-                        borderSide: const BorderSide(
-                          color: Color.fromARGB(255, 138, 157, 94),
-                          width: 3,
-                        ),
-                      );
-
-                      return Container(
                         decoration: BoxDecoration(
-                          borderRadius: borderRadius,
-                          boxShadow: [
-                            BoxShadow(
-                              color: const Color.fromARGB(255, 149, 164, 113)
-                                  .withOpacity(0.5),
-                              spreadRadius: 3,
-                            )
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(
+                            color: Colors.white,
+                          ),
+                        ),
+                        child: const Column(
+                          children: [
+                            Text(
+                              'How are you feeling?',
+                              style: TextStyle(
+                                fontWeight: FontWeight.w600,
+                                fontSize: 18,
+                                color: Colors.white,
+                              ),
+                            ),
+                            SizedBox(height: 12),
+                            Text(
+                              'Users typically log their moods at regular intervals, such as daily or weekly, using a variety of emotional descriptors.',
+                              style: TextStyle(
+                                fontWeight: FontWeight.w400,
+                                color: Colors.white,
+                                fontSize: 14,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
                           ],
                         ),
-                        child: TextField(
-                          controller: _controller,
-                          textInputAction: TextInputAction.done,
-                          decoration: InputDecoration(
-                            filled: true,
-                            fillColor: Colors.white,
-                            border: border,
-                            enabledBorder: border,
-                            hintText: 'Record a short snippet of your day!',
+                      ),
+                      const SizedBox(height: 15),
+                      Expanded(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: [
+                            getFaceDescriptor,
+                            SizedBox(
+                              child: RatingBar.builder(
+                                initialRating: selected.toDouble(),
+                                minRating: 1,
+                                direction: Axis.horizontal,
+                                allowHalfRating: false,
+                                itemCount: 5,
+                                itemBuilder: (context, _) => Icon(
+                                  Icons.favorite,
+                                  color: Colors.white.withOpacity(0.85),
+                                  size: 10,
+                                ),
+                                glowColor: Colors.white,
+                                glow: false,
+                                itemSize: 32,
+                                updateOnDrag: true,
+                                onRatingUpdate: (rating) {
+                                  setState(() {
+                                    selected = rating.toInt();
+                                  });
+                                },
+                              ),
+                            ),
+                            RichText(
+                              text: TextSpan(
+                                  text: '$getMoodDescriptorStart ',
+                                  style: GoogleFonts.urbanist(
+                                    color: Colors.white,
+                                    fontSize: 24,
+                                  ),
+                                  children: [
+                                    TextSpan(
+                                      text: getMoodDescriptorBold,
+                                      style: const TextStyle(
+                                        fontWeight: FontWeight.w900,
+                                      ),
+                                    ),
+                                  ]),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Builder(builder: (context) {
+                        final borderRadius = BorderRadius.circular(24);
+                        final border = OutlineInputBorder(
+                          borderRadius: borderRadius,
+                          borderSide: const BorderSide(
+                            color: Color.fromARGB(255, 138, 157, 94),
+                            width: 3,
                           ),
-                          maxLines: 3,
-                          keyboardType: TextInputType.multiline,
-                        ),
-                      );
-                    }),
-                    const SizedBox(height: 15),
-                    GestureDetector(
-                      onTap: () async {
-                        final invert = 5 - selected + 1;
+                        );
 
-                        final validate = await GetIt.instance
-                            .get<ChopperClient>()
-                            .getService<ApiService>()
-                            .submitMood({
-                          'mood': invert,
-                          'journal': _controller.text,
-                        });
+                        return Container(
+                          decoration: BoxDecoration(
+                            borderRadius: borderRadius,
+                            boxShadow: [
+                              BoxShadow(
+                                color: const Color.fromARGB(255, 149, 164, 113)
+                                    .withOpacity(0.5),
+                                spreadRadius: 3,
+                              )
+                            ],
+                          ),
+                          child: TextField(
+                            controller: _controller,
+                            textInputAction: TextInputAction.done,
+                            decoration: InputDecoration(
+                              filled: true,
+                              fillColor: Colors.white,
+                              border: border,
+                              enabledBorder: border,
+                              hintText: 'Record a short snippet of your day!',
+                            ),
+                            maxLines: 1,
+                            keyboardType: TextInputType.multiline,
+                          ),
+                        );
+                      }),
+                      const SizedBox(height: 15),
+                      GestureDetector(
+                        onTap: () async {
+                          final invert = 5 - selected + 1;
 
-                        if (validate.isSuccessful && context.mounted) {
-                          Navigator.pop(context);
-                        }
-                      },
-                      child: AnimatedContainer(
-                        duration: const Duration(milliseconds: 150),
-                        width: double.infinity,
-                        padding: const EdgeInsets.symmetric(vertical: 20),
-                        decoration: BoxDecoration(
-                          color: const Color(0xff6366F1),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Center(
-                          child: Text(
-                            'Log my reflection'.toUpperCase(),
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 18,
+                          final validate = await GetIt.instance
+                              .get<ChopperClient>()
+                              .getService<ApiService>()
+                              .submitMood({
+                            'mood': invert,
+                            'journal': _controller.text,
+                          });
+
+                          if (validate.isSuccessful && context.mounted) {
+                            Navigator.pop(context);
+                          }
+                        },
+                        child: AnimatedContainer(
+                          duration: const Duration(milliseconds: 150),
+                          width: double.infinity,
+                          padding: const EdgeInsets.symmetric(vertical: 20),
+                          decoration: BoxDecoration(
+                            color: const Color(0xff6366F1),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Center(
+                            child: Text(
+                              'Log my reflection'.toUpperCase(),
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 18,
+                              ),
                             ),
                           ),
                         ),
                       ),
-                    ),
-                    const SizedBox(height: 30),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ),

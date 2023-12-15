@@ -167,34 +167,21 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       floatingActionButton: Padding(
         padding: const EdgeInsets.only(bottom: 80),
-        child: SpeedDial(
-          icon: Icons.add,
-          backgroundColor: const Color(0xff7C74FF),
-          activeIcon: Icons.close,
-          spacing: 3,
-          children: [
-            SpeedDialChild(
-              child: const Icon(
-                FontAwesomeIcons.pen,
-                color: Colors.white,
-                size: 18,
+        child: FloatingActionButton(
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) {
+                  return const AddEntryPage();
+                },
               ),
-              backgroundColor: const Color(0xff7C74FF),
-              label: 'Add Journal Entry',
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) {
-                      return const AddEntryPage();
-                    },
-                  ),
-                ).then((value) {
-                  _loadHomepageData();
-                });
-              },
-            ),
-          ],
+            ).then((value) {
+              _loadHomepageData();
+            });
+          },
+          backgroundColor: const Color(0xff7C74FF),
+          child: const Icon(Icons.add),
         ),
       ),
       body: Stack(
